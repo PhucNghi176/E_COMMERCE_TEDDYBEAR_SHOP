@@ -32,6 +32,7 @@
         <ProjectReference Include="..\COMMAND.INFRASTRUCTURE\COMMAND.INFRASTRUCTURE.csproj" />
         <ProjectReference Include="..\COMMAND.PRESENTATION\COMMAND.PRESENTATION.csproj" />
         <ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj" />
+        <ProjectReference Include="..\..\E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults\ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>
