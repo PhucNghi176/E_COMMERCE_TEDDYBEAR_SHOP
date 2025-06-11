@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsAspireHost>true</IsAspireHost>
+		<UserSecretsId>5b0a4c39-58b7-495f-9e57-6def3f58918e</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj" />
+		<ProjectReference Include="..\COMMAND\COMMAND.API\COMMAND.API.csproj" />
+		<ProjectReference Include="..\QUERRY\QUERRY.API\QUERRY.API.csproj" />
+	</ItemGroup>
+
+</Project>
