@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using COMMAND.API.DependencyInjection.Extensions;
 using COMMAND.API.Middlewares;
 using COMMAND.APPLICATION.DependencyInjection.Extensions;
@@ -11,8 +11,12 @@ using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
 using Serilog.Events;
+using ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Aspire ServiceDefaults (includes OpenTelemetry, health checks, service discovery)
+builder.AddServiceDefaults();
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -89,6 +93,9 @@ builder.Services.AddAntiforgery(options =>
 builder.Services.AddSignalR();
 
 var app = builder.Build();
+
+// Map Aspire default endpoints (health checks, etc.)
+app.MapDefaultEndpoints();
 
 // Using middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
