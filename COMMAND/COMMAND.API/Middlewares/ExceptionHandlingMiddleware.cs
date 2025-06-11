@@ -49,6 +49,7 @@ internal sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddl
             // Application.Exceptions.ValidationException => StatusCodes.Status422UnprocessableEntity,
             // FluentValidation.ValidationException => StatusCodes.Status400BadRequest,
             // FormatException => StatusCodes.Status422UnprocessableEntity,
+            AlreadyExistedException _ => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
         };
     }
