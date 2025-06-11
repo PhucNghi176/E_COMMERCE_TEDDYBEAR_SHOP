@@ -1,3 +1,4 @@
+using System.Reflection;
 using CloudinaryDotNet;
 using COMMAND.INFRASTRUCTURE.BackgroundJobs;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
@@ -16,7 +17,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;
 using StackExchange.Redis;
-using System.Reflection;
 
 namespace COMMAND.INFRASTRUCTURE.DependencyInjection.Extensions;
 public static class ServiceCollectionExtensions
@@ -48,7 +48,6 @@ public static class ServiceCollectionExtensions
         // Register Redis ConnectionMultiplexer as singleton
         services.AddSingleton<IConnectionMultiplexer>(sp =>
             ConnectionMultiplexer.Connect(connectionString ?? "localhost"));
-
     }
 
     // Configure for masstransit with rabbitMQ

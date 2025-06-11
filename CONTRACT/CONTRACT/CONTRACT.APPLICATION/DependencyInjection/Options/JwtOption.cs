@@ -1,5 +1,4 @@
 namespace CONTRACT.CONTRACT.APPLICATION.DependencyInjection.Options;
-
 public class JwtOption
 {
     public string Issuer { get; set; }

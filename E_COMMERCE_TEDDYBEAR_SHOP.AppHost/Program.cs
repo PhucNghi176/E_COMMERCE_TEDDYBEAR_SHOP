@@ -1,9 +1,11 @@
+using Projects;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddProject<Projects.COMMAND_API>("command-api");
+builder.AddProject<COMMAND_API>("command-api");
 
-builder.AddProject<Projects.QUERRY_API>("querry-api");
+builder.AddProject<QUERRY_API>("querry-api");
 
-builder.AddProject<Projects.AUTHORIZATION_API>("authorization-api");
+builder.AddProject<AUTHORIZATION_API>("authorization-api");
 
 builder.Build().Run();

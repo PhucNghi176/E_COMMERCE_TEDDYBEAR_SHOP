@@ -5,7 +5,6 @@ using MassTransit;
 using MediatR;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Consumer.Abstractions.Messages;
-
 public abstract class Consumer<TMessage>(ISender sender, IMongoRepository<EventProjection> repository)
     : IConsumer<TMessage>
     where TMessage : class, IDomainEvent

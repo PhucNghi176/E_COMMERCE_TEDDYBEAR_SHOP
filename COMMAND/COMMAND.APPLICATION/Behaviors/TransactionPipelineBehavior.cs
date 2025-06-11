@@ -10,7 +10,7 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>(Application
     public async Task<TResponse> Handle(TRequest request,
         RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!TransactionPipelineBehavior<TRequest, TResponse>.IsCommand()) // In case TRequest is QueryRequest just ignore
+        if (!IsCommand()) // In case TRequest is QueryRequest just ignore
             return await next();
 
         #region ============== SQL-SERVER-STRATEGY-1 ==============

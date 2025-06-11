@@ -1,5 +1,4 @@
 ﻿namespace CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
-
 public class MasstransitConfiguration
 {
     public string Host { get; set; }

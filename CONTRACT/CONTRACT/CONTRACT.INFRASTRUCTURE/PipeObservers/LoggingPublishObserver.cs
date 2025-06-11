@@ -2,7 +2,6 @@
 using Serilog;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.PipeObservers;
-
 public class LoggingPublishObserver : IPublishObserver
 {
     public async Task PrePublish<T>(PublishContext<T> context)
@@ -28,7 +27,8 @@ public class LoggingPublishObserver : IPublishObserver
     {
         await Task.Yield();
 
-        Log.Error("Fault on publishing message {Message} from {Namespace}, Error: {Error}, CorrelationId: {CorrelationId}",
+        Log.Error(
+            "Fault on publishing message {Message} from {Namespace}, Error: {Error}, CorrelationId: {CorrelationId}",
             typeof(T).Name, typeof(T).Namespace, exception.Message, context.CorrelationId);
     }
 }

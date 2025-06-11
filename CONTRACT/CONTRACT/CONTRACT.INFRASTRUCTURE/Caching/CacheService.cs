@@ -1,11 +1,10 @@
+using System.Collections.Concurrent;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Collections.Concurrent;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
-
 public class CacheService(IDistributedCache distributedCache) : ICacheService
 {
     /**
@@ -19,11 +18,11 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         where T : class
     {
-        string? cacheValue = await distributedCache.GetStringAsync(key, cancellationToken);
+        var cacheValue = await distributedCache.GetStringAsync(key, cancellationToken);
 
         if (cacheValue is null)
             return null;
-        T? value = JsonConvert.DeserializeObject<T>(cacheValue, new JsonSerializerSettings
+        var value = JsonConvert.DeserializeObject<T>(cacheValue, new JsonSerializerSettings
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             ContractResolver = new DefaultContractResolver
@@ -34,9 +33,10 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
         return value;
     }
 
-    public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions? options, CancellationToken cancellationToken = default) where T : class
+    public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions? options,
+        CancellationToken cancellationToken = default) where T : class
     {
-        string cacheValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings
+        var cacheValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver
             {
@@ -44,10 +44,7 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
             }
         });
 
-        if (options != null)
-        {
-            await distributedCache.SetStringAsync(key, cacheValue, options, cancellationToken);
-        }
+        if (options != null) await distributedCache.SetStringAsync(key, cacheValue, options, cancellationToken);
 
         await distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
 
@@ -57,7 +54,7 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         await distributedCache.RemoveAsync(key, cancellationToken);
-        CacheKeys.TryRemove(key, out bool _);
+        CacheKeys.TryRemove(key, out var _);
     }
 
     public async Task RemoveByPrefixAsync(string prefixKey, CancellationToken cancellationToken = default)
@@ -68,7 +65,7 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
         //        await RemoveAsync(key, cancellationToken); // Call remove one by one
         //}
 
-        IEnumerable<Task> tasks = CacheKeys.Keys.Where(k => k.StartsWith(prefixKey))
+        var tasks = CacheKeys.Keys.Where(k => k.StartsWith(prefixKey))
             .Select(k => RemoveAsync(k, cancellationToken));
 
         await Task.WhenAll(tasks); // Execute in parallel

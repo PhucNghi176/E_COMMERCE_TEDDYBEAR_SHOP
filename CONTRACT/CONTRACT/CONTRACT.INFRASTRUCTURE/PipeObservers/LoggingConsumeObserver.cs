@@ -2,7 +2,6 @@
 using Serilog;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.PipeObservers;
-
 public class LoggingConsumeObserver : IConsumeObserver
 {
     public async Task PreConsume<T>(ConsumeContext<T> context)
@@ -16,9 +15,13 @@ public class LoggingConsumeObserver : IConsumeObserver
 
     public Task PostConsume<T>(ConsumeContext<T> context)
         where T : class
-        => Task.CompletedTask;
+    {
+        return Task.CompletedTask;
+    }
 
     public Task ConsumeFault<T>(ConsumeContext<T> context, Exception exception)
         where T : class
-        => Task.CompletedTask;
+    {
+        return Task.CompletedTask;
+    }
 }

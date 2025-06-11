@@ -1,14 +1,13 @@
-﻿using CONTRACT.CONTRACT.APPLICATION.Abstractions;
-using CONTRACT.CONTRACT.APPLICATION.DependencyInjection.Options;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using CONTRACT.CONTRACT.APPLICATION.Abstractions;
+using CONTRACT.CONTRACT.APPLICATION.DependencyInjection.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Authentication;
-
 public class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOption jwtOption = new();
@@ -24,9 +23,9 @@ public class JwtTokenService : IJwtTokenService
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
         var tokeOptions = new JwtSecurityToken(
-            issuer: jwtOption.Issuer,
-            audience: jwtOption.Audience,
-            claims: claims,
+            jwtOption.Issuer,
+            jwtOption.Audience,
+            claims,
             expires: DateTime.Now.AddHours(jwtOption.ExpireMin),
             signingCredentials: signinCredentials
         );
@@ -65,10 +64,9 @@ public class JwtTokenService : IJwtTokenService
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
-            }
 
             return (principal, false); // Token is valid and not expired
         }
@@ -79,10 +77,9 @@ public class JwtTokenService : IJwtTokenService
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
-            }
 
             return (principal, true); // Token is valid but expired
         }

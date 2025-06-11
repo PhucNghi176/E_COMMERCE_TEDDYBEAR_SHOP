@@ -1,7 +1,7 @@
+using System.Linq.Expressions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace COMMAND.PERSISTENCE.Repositories;
 public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRepositoryBase<TEntity, TKey>, IDisposable

@@ -1,11 +1,11 @@
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Mail;
-
 public class MailService(IOptions<MailOption> mailOptions) : IMailService
 {
     private readonly MailOption _mailOptions = mailOptions.Value;
@@ -23,12 +23,12 @@ public class MailService(IOptions<MailOption> mailOptions) : IMailService
 
         BodyBuilder builder = new()
         {
-            HtmlBody = mailContent.Body,
+            HtmlBody = mailContent.Body
         };
         email.Body = builder.ToMessageBody();
 
         // dùng SmtpClient của MailKit
-        using MailKit.Net.Smtp.SmtpClient smtp = new();
+        using SmtpClient smtp = new();
 
         await smtp.ConnectAsync(_mailOptions?.Host, _mailOptions!.Port, SecureSocketOptions.StartTls);
         await smtp.AuthenticateAsync(_mailOptions.Mail, _mailOptions.Password);

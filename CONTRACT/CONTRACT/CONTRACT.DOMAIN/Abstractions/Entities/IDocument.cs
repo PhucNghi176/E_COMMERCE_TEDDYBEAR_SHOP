@@ -10,6 +10,4 @@ public interface IDocument
 
     DateTime CreatedOnUtc { get; set; }
     DateTime? ModifiedOnUtc { get; }
-
-
 }

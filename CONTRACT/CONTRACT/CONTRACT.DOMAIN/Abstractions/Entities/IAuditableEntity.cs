@@ -1,5 +1,4 @@
 namespace CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
-
 public interface IAuditableEntity
 {
     DateTimeOffset CreatedOnUtc { get; set; }

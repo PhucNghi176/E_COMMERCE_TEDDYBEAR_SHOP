@@ -1,7 +1,6 @@
 using MassTransit;
 
 namespace CONTRACT.CONTRACT.CONTRACT.Abstractions.Messages;
-
 [ExcludeFromTopology]
 public interface IDomainEvent
 {

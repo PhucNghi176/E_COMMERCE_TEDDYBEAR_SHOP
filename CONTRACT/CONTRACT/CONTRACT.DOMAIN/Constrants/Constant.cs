@@ -1,8 +1,7 @@
 ﻿namespace CONTRACT.CONTRACT.DOMAIN.Constrants;
 /// <summary>
-/// Constant class
+///     Constant class
 /// </summary>
 public static class Constant
 {
-
 }

@@ -29,10 +29,10 @@ public interface IMongoRepository<TDocument>
     Task InsertOneAsync(TDocument document);
 
     Task<UpdateResult> UpdateOneAsync(
-       FilterDefinition<TDocument> filter,
-       UpdateDefinition<TDocument> update,
-       UpdateOptions? options = null,
-       CancellationToken cancellationToken = default);
+        FilterDefinition<TDocument> filter,
+        UpdateDefinition<TDocument> update,
+        UpdateOptions? options = null,
+        CancellationToken cancellationToken = default);
 
     void InsertMany(ICollection<TDocument> documents);
 

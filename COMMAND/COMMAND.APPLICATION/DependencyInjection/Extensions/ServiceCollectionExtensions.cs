@@ -19,12 +19,11 @@ public static class ServiceCollectionExtensions
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingPipelineBehaviorCachingBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(TracingPipelineBehavior<,>))
-            .AddValidatorsFromAssembly(COMMAND.CONTRACT.AssemblyReference.Assembly, includeInternalTypes: true);
+            .AddValidatorsFromAssembly(CONTRACT.AssemblyReference.Assembly, includeInternalTypes: true);
     }
 
     //public static IServiceCollection PayOs(this IServiceCollection services)
     //{
     //    return services.AddTransient<IPaymentService, PaymentServices.PaymentServices>();
     //}
-
 }

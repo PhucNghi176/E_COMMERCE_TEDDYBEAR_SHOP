@@ -47,7 +47,6 @@ public class ProcessOutboxMessagesJob(ApplicationDbContext dbContext, IPublishEn
                     //             });
                     //     await _publishEndpoint.Publish(postgreMigrate, context.CancellationToken);
                     //     break;
-
                 }
 
                 outboxMessage.ProcessedOnUtc = DateTime.UtcNow;

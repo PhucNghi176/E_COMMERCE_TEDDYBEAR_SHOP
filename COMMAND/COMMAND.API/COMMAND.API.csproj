@@ -1,31 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Carter" Version="8.2.1" />
-		<PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="6.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
-		
-		
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Carter" Version="8.2.1"/>
+        <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="6.1.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0"/>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj" />
-		<ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
-		<ProjectReference Include="..\COMMAND.APPLICATION\COMMAND.APPLICATION.csproj" />
-		<ProjectReference Include="..\COMMAND.CONTRACT\COMMAND.CONTRACT.csproj" />
-		<ProjectReference Include="..\COMMAND.INFRASTRUCTURE\COMMAND.INFRASTRUCTURE.csproj" />
-		<ProjectReference Include="..\COMMAND.PRESENTATION\COMMAND.PRESENTATION.csproj" />
-		<ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj" />
-	</ItemGroup>
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj"/>
+        <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
+        <ProjectReference Include="..\COMMAND.APPLICATION\COMMAND.APPLICATION.csproj"/>
+        <ProjectReference Include="..\COMMAND.CONTRACT\COMMAND.CONTRACT.csproj"/>
+        <ProjectReference Include="..\COMMAND.INFRASTRUCTURE\COMMAND.INFRASTRUCTURE.csproj"/>
+        <ProjectReference Include="..\COMMAND.PRESENTATION\COMMAND.PRESENTATION.csproj"/>
+        <ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj"/>
+    </ItemGroup>
 
 </Project>

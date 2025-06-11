@@ -1,5 +1,4 @@
 namespace CONTRACT.CONTRACT.CONTRACT.Abstractions.Shared;
-
 public class ValidationResult<Tvalue> : Result<Tvalue>, IValidationResult
 {
     protected internal ValidationResult(Error[] errors) : base(default, false, IValidationResult.ValidationError)
@@ -9,5 +8,8 @@ public class ValidationResult<Tvalue> : Result<Tvalue>, IValidationResult
 
     public Error[] Errors { get; }
 
-    public static ValidationResult<Tvalue> WithErrors(Error[] errors) => new(errors);
+    public static ValidationResult<Tvalue> WithErrors(Error[] errors)
+    {
+        return new ValidationResult<Tvalue>(errors);
+    }
 }

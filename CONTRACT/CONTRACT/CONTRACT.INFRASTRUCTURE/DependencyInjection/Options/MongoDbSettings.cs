@@ -1,5 +1,4 @@
 ﻿namespace CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
-
 public interface IMongoDbSettings
 {
     string DatabaseName { get; set; }

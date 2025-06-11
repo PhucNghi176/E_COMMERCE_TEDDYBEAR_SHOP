@@ -2,15 +2,18 @@
 using MassTransit;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Extensions;
-
 public static class NameFormatterExtensions
 {
     public static string ToKebabCaseString(this MemberInfo member)
-        => KebabCaseEndpointNameFormatter.Instance.SanitizeName(member.Name);
+    {
+        return KebabCaseEndpointNameFormatter.Instance.SanitizeName(member.Name);
+    }
 }
 
 public class KebabCaseEntityNameFormatter : IEntityNameFormatter
 {
     public string FormatEntityName<T>()
-        => typeof(T).ToKebabCaseString();
+    {
+        return typeof(T).ToKebabCaseString();
+    }
 }
