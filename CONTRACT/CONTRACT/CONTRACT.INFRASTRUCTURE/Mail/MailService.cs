@@ -32,7 +32,7 @@ public class MailService(IOptions<MailOption> mailOptions) : IMailService
 
         await smtp.ConnectAsync(_mailOptions?.Host, _mailOptions!.Port, SecureSocketOptions.StartTls);
         await smtp.AuthenticateAsync(_mailOptions.Mail, _mailOptions.Password);
-        await smtp.SendAsync(email);
+        _ = await smtp.SendAsync(email);
 
         // try
         // {

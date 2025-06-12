@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using MassTransit;
+﻿using MassTransit;
+using System.Reflection;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Extensions;
 public static class NameFormatterExtensions

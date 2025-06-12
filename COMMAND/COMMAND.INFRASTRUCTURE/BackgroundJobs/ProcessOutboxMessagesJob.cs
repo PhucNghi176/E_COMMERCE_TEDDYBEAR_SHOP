@@ -57,6 +57,6 @@ public class ProcessOutboxMessagesJob(ApplicationDbContext dbContext, IPublishEn
             }
         }
 
-        await dbContext.SaveChangesAsync();
+        _ = await dbContext.SaveChangesAsync();
     }
 }

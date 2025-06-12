@@ -7,6 +7,6 @@ internal sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outb
 {
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
-        builder.HasKey(x => x.Id);
+        _ = builder.HasKey(x => x.Id);
     }
 }

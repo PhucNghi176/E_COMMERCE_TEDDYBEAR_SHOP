@@ -1,4 +1,3 @@
-using System.Reflection;
 using CloudinaryDotNet;
 using COMMAND.INFRASTRUCTURE.BackgroundJobs;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
@@ -17,13 +16,14 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;
 using StackExchange.Redis;
+using System.Reflection;
 
 namespace COMMAND.INFRASTRUCTURE.DependencyInjection.Extensions;
 public static class ServiceCollectionExtensions
 {
     public static void AddServicesInfrastructure(this IServiceCollection services)
     {
-        services
+        _ = services
             .AddTransient<IJwtTokenService, JwtTokenService>()
             .AddTransient<ICacheService, CacheService>()
             .AddSingleton<IMediaService, CloudinaryService>()
@@ -43,10 +43,10 @@ public static class ServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("Redis");
 
-        services.AddStackExchangeRedisCache(redisOptions => { redisOptions.Configuration = connectionString; });
+        _ = services.AddStackExchangeRedisCache(redisOptions => { redisOptions.Configuration = connectionString; });
 
         // Register Redis ConnectionMultiplexer as singleton
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        _ = services.AddSingleton<IConnectionMultiplexer>(sp =>
             ConnectionMultiplexer.Connect(connectionString ?? "localhost"));
     }
 
@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
         var messageBusOption = new MessageBusOptions();
         configuration.GetSection(nameof(MessageBusOptions)).Bind(messageBusOption);
 
-        services.AddMassTransit(cfg =>
+        _ = services.AddMassTransit(cfg =>
         {
             // ===================== Setup for Consumer =====================
             cfg.AddConsumers(Assembly
@@ -102,10 +102,10 @@ public static class ServiceCollectionExtensions
                     return settings;
                 });
 
-                bus.ConnectReceiveObserver(new LoggingReceiveObserver());
-                bus.ConnectConsumeObserver(new LoggingConsumeObserver());
-                bus.ConnectPublishObserver(new LoggingPublishObserver());
-                bus.ConnectSendObserver(new LoggingSendObserver());
+                _ = bus.ConnectReceiveObserver(new LoggingReceiveObserver());
+                _ = bus.ConnectConsumeObserver(new LoggingConsumeObserver());
+                _ = bus.ConnectPublishObserver(new LoggingPublishObserver());
+                _ = bus.ConnectSendObserver(new LoggingSendObserver());
 
                 // Rename for Root Exchange and setup for consumer also
                 bus.MessageTopology.SetEntityNameFormatter(new KebabCaseEntityNameFormatter());
@@ -123,11 +123,11 @@ public static class ServiceCollectionExtensions
     // Configure Job
     public static void AddQuartzInfrastructure(this IServiceCollection services)
     {
-        services.AddQuartz(configure =>
+        _ = services.AddQuartz(configure =>
         {
             // Process outbox messages job
             var outboxJobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
-            configure
+            _ = configure
                 .AddJob<ProcessOutboxMessagesJob>(outboxJobKey)
                 .AddTrigger(trigger =>
                     trigger.ForJob(outboxJobKey)
@@ -139,13 +139,13 @@ public static class ServiceCollectionExtensions
             configure.UseMicrosoftDependencyInjectionJobFactory();
         });
 
-        services.AddQuartzHostedService();
+        _ = services.AddQuartzHostedService();
     }
 
     public static void ConfigureCloudinaryOptionsInfrastructure(this IServiceCollection services,
         IConfigurationSection section)
     {
-        services
+        _ = services
             .AddOptions<CloudinaryOptions>()
             .Bind(section)
             .ValidateDataAnnotations()
@@ -155,7 +155,7 @@ public static class ServiceCollectionExtensions
     public static void ConfigureMailOptionsInfrastructure(this IServiceCollection services,
         IConfigurationSection section)
     {
-        services
+        _ = services
             .AddOptions<MailOption>()
             .Bind(section)
             .ValidateDataAnnotations()
@@ -165,6 +165,6 @@ public static class ServiceCollectionExtensions
     // Configure MediatR
     public static void AddMediatRInfrastructure(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+        _ = services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
     }
 }

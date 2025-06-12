@@ -23,7 +23,7 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>(Application
             await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
             {
                 var response = await next();
-                await context.SaveChangesAsync(cancellationToken);
+                _ = await context.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
                 return response;
             }

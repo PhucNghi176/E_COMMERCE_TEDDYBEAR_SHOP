@@ -14,7 +14,7 @@ public static class SwaggerExtensions
 {
     public static void AddSwaggerAPI(this IServiceCollection services)
     {
-        services.AddSwaggerGen(c =>
+        _ = services.AddSwaggerGen(c =>
         {
             c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
@@ -52,13 +52,13 @@ Example: 'ey12345abcdef'",
 
             // c.EnableAnnotations();
         });
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        _ = services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     }
 
     public static void UseSwaggerAPI(this WebApplication app)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        _ = app.UseSwagger();
+        _ = app.UseSwaggerUI(options =>
         {
             foreach (var version in app.DescribeApiVersions().Select(version => version.GroupName))
                 options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version);
@@ -68,7 +68,7 @@ Example: 'ey12345abcdef'",
             options.DocExpansion(DocExpansion.None);
         });
 
-        app.MapGet("/", () => Results.Redirect("/swagger/index.html"))
+        _ = app.MapGet("/", () => Results.Redirect("/swagger/index.html"))
             .WithTags(string.Empty);
     }
 

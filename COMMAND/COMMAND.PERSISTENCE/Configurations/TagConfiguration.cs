@@ -7,14 +7,14 @@ internal sealed class TagConfiguration : IEntityTypeConfiguration<Tag>
 {
     public void Configure(EntityTypeBuilder<Tag> builder)
     {
-        builder.HasKey(x => x.Id);
-        
-        builder.Property(x => x.Name)
+        _ = builder.HasKey(x => x.Id);
+
+        _ = builder.Property(x => x.Name)
             .IsRequired()
             .HasMaxLength(100);
-            
+
         // Create unique index on Name
-        builder.HasIndex(x => x.Name)
+        _ = builder.HasIndex(x => x.Name)
             .IsUnique();
     }
 }

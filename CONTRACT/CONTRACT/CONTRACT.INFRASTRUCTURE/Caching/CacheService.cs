@@ -1,8 +1,8 @@
-using System.Collections.Concurrent;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Concurrent;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
 public class CacheService(IDistributedCache distributedCache) : ICacheService
@@ -48,13 +48,13 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
 
         await distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
 
-        CacheKeys.TryAdd(key, false);
+        _ = CacheKeys.TryAdd(key, false);
     }
 
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         await distributedCache.RemoveAsync(key, cancellationToken);
-        CacheKeys.TryRemove(key, out var _);
+        _ = CacheKeys.TryRemove(key, out _);
     }
 
     public async Task RemoveByPrefixAsync(string prefixKey, CancellationToken cancellationToken = default)

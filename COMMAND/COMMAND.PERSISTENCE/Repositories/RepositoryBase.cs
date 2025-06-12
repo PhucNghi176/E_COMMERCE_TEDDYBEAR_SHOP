@@ -1,7 +1,7 @@
-using System.Linq.Expressions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace COMMAND.PERSISTENCE.Repositories;
 public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRepositoryBase<TEntity, TKey>, IDisposable
@@ -43,7 +43,7 @@ public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRe
 
     public void Add(TEntity entity)
     {
-        dbContext.Add(entity);
+        _ = dbContext.Add(entity);
     }
 
 
@@ -59,7 +59,7 @@ public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRe
 
     public void Remove(TEntity entity)
     {
-        dbContext.Set<TEntity>().Remove(entity);
+        _ = dbContext.Set<TEntity>().Remove(entity);
     }
 
     public void RemoveMultiple(List<TEntity> entities)
@@ -69,6 +69,6 @@ public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRe
 
     public void Update(TEntity entity)
     {
-        dbContext.Set<TEntity>().Update(entity);
+        _ = dbContext.Set<TEntity>().Update(entity);
     }
 }

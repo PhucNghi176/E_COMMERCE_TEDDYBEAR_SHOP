@@ -18,7 +18,7 @@ public abstract class Consumer<TMessage>(ISender sender, IMongoRepository<EventP
 
         if (eventProjection is null)
         {
-            await sender.Send(context.Message);
+            _ = await sender.Send(context.Message);
 
             Console.WriteLine(context.Message.ToString());
 

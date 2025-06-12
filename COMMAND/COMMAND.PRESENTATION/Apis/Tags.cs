@@ -15,7 +15,7 @@ public class Tags : ApiEndpoint, ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var gr1 = app.NewVersionedApi("Tags").MapGroup(BaseUrl).HasApiVersion(1);
-        gr1.MapPost("", CreateTagAsync);
+        _ = gr1.MapPost("", CreateTagAsync);
 
     }
 

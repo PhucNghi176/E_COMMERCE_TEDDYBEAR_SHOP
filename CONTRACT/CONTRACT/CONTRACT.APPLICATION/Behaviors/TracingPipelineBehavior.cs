@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace CONTRACT.CONTRACT.APPLICATION.Behaviors;
 public class TracingPipelineBehavior<TRequest, TResponse>(ILogger<TRequest> logger) :

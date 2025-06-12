@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddSqlServerPersistence(this IServiceCollection services)
     {
-        services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
+        _ = services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
         {
             // Interceptor
             var outboxInterceptor = provider.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
 
             #region ============== SQL-SERVER-STRATEGY-1 ==============
 
-            builder
+            _ = builder
                 .EnableDetailedErrors()
                 .EnableSensitiveDataLogging()
                 .UseLazyLoadingProxies() // => If UseLazyLoadingProxies, all of the navigation fields should be VIRTUAL
@@ -64,14 +64,14 @@ public static class ServiceCollectionExtensions
 
     public static void AddInterceptorPersistence(this IServiceCollection services)
     {
-        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
-        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
-        services.AddSingleton<DeleteAuditableEntitiesInterceptor>();
+        _ = services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+        _ = services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+        _ = services.AddSingleton<DeleteAuditableEntitiesInterceptor>();
     }
 
     public static void AddRepositoryPersistence(this IServiceCollection services)
     {
-        services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+        _ = services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
         // services.AddTransient(typeof(IUnitOfWork), typeof(EFUnitOfWork));
     }
 

@@ -1,18 +1,18 @@
-﻿using System.Text;
-using CONTRACT.CONTRACT.APPLICATION.DependencyInjection.Options;
+﻿using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 public static class JwtExtensions
 {
     public static void AddJwtAuthenticationAPI(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAuthentication(options =>
+        _ = services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -58,7 +58,7 @@ public static class JwtExtensions
                     OnAuthenticationFailed = context =>
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                            context.Response.Headers.Add("IS-TOKEN-EXPIRED", "true");
+                            context.Response.Headers["IS-TOKEN-EXPIRED"] = "true";
 
                         return Task.CompletedTask;
                     }

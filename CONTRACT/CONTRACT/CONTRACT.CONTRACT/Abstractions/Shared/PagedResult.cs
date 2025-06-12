@@ -1,7 +1,7 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using System.Text.Json.Serialization;
 
 namespace CONTRACT.CONTRACT.CONTRACT.Abstractions.Shared;
 [method: JsonConstructor]

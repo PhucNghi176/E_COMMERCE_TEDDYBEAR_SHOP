@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using COMMAND.APPLICATION.Exceptions;
+﻿using COMMAND.APPLICATION.Exceptions;
 using CONTRACT.CONTRACT.DOMAIN.Exceptions;
+using System.Text.Json;
 
 namespace COMMAND.API.Middlewares;
 internal sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger) : IMiddleware

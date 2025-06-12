@@ -1,6 +1,0 @@
-@QUERRY.API_HostAddress = http://localhost:5288
-
-GET {{QUERRY.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

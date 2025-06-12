@@ -1,14 +1,14 @@
-using System.Text;
-using CONTRACT.CONTRACT.APPLICATION.DependencyInjection.Options;
+using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace COMMAND.API.DependencyInjection.Extensions;
 public static class JwtExtensions
 {
     public static void AddJwtAuthenticationAPI1(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAuthentication(options =>
+        _ = services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;

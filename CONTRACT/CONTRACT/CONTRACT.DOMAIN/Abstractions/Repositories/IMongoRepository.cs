@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
-using CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
+﻿using CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using System.Linq.Expressions;
 
 namespace CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 public interface IMongoRepository<TDocument>
