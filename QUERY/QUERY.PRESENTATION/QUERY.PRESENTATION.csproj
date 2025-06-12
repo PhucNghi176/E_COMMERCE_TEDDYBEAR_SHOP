@@ -7,4 +7,9 @@
         <RootNamespace>QUERY.PRESENTATION</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
+      <ProjectReference Include="..\QUERY.CONTRACT\QUERY.CONTRACT.csproj" />
+    </ItemGroup>
+
 </Project>

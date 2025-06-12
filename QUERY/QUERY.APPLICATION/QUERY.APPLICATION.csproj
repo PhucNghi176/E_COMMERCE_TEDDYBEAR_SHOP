@@ -7,13 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="UseCases\Events\" />
-      <Folder Include="UseCases\Queries\" />
+        <Folder Include="UseCases\Events\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
-      <ProjectReference Include="..\QUERY.CONTRACT\QUERY.CONTRACT.csproj" />
+        <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
+        <ProjectReference Include="..\QUERY.CONTRACT\QUERY.CONTRACT.csproj"/>
     </ItemGroup>
 
 </Project>
