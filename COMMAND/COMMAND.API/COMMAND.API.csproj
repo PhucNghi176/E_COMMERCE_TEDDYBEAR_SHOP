@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj" />
         <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
         <ProjectReference Include="..\COMMAND.APPLICATION\COMMAND.APPLICATION.csproj" />
         <ProjectReference Include="..\COMMAND.CONTRACT\COMMAND.CONTRACT.csproj" />
