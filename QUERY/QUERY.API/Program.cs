@@ -59,10 +59,6 @@ builder.Services.ConfigureSqlServerRetryOptionsPersistence(
     builder.Configuration.GetSection(nameof(SqlServerRetryOptions))
 );
 
-// builder.Services.ConfigurePostgreSqlRetryOptionsPersistence(
-//     builder.Configuration.GetSection(nameof(PostgreSqlRetryOptions))
-// );
-
 // =====================>
 builder.Services.AddSqlServerPersistence();
 
@@ -71,9 +67,9 @@ builder.Services.ConfigureServicesInfrastructure(builder.Configuration);
 
 // Infrastructure Layer
 builder.Services.AddServicesInfrastructure();
-builder.Services.AddRedisInfrastructure(builder.Configuration);
+//builder.Services.AddRedisInfrastructure(builder.Configuration);
 builder.Services.AddMediatRInfrastructure();
-builder.Services.AddMasstransitRabbitMqInfrastructure(builder.Configuration);
+//builder.Services.AddMasstransitRabbitMqInfrastructure(builder.Configuration);
 // builder.Services.ConfigureHealthChecks(builder.Configuration);
 builder.Services.AddJwtAuthenticationAPI1(builder.Configuration);
 
