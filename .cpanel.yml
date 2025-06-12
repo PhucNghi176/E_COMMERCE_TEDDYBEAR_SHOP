@@ -1,0 +1,32 @@
+﻿---
+deployment:
+  tasks:
+    # Copy images directory and all its contents to public_html
+    - export DEPLOYPATH=/home/example/public_html/
+    - /bin/cp -R images $DEPLOYPATH 2>/dev/null || echo "Images directory not found in root, checking other locations..."
+    
+    # Check for images in COMMAND API wwwroot
+    - /bin/cp -R COMMAND/COMMAND.API/wwwroot/images $DEPLOYPATH 2>/dev/null || echo "No images in COMMAND API wwwroot"
+    
+    # Check for images in QUERY API wwwroot  
+    - /bin/cp -R QUERY/QUERY.API/wwwroot/images $DEPLOYPATH 2>/dev/null || echo "No images in QUERY API wwwroot"
+    
+    # Check for images in AUTHORIZATION API wwwroot
+    - /bin/cp -R AUTHORIZATION/AUTHORIZATION.API/wwwroot/images $DEPLOYPATH 2>/dev/null || echo "No images in AUTHORIZATION API wwwroot"
+    
+    # Copy any static assets or media files
+    - /bin/cp -R static $DEPLOYPATH 2>/dev/null || echo "No static directory found"
+    - /bin/cp -R assets $DEPLOYPATH 2>/dev/null || echo "No assets directory found"
+    - /bin/cp -R media $DEPLOYPATH 2>/dev/null || echo "No media directory found"
+    
+    # Set proper permissions for web files
+    - /bin/chmod -R 755 $DEPLOYPATH/images 2>/dev/null || echo "No images directory to set permissions"
+    - /bin/chmod -R 755 $DEPLOYPATH/static 2>/dev/null || echo "No static directory to set permissions"
+    - /bin/chmod -R 755 $DEPLOYPATH/assets 2>/dev/null || echo "No assets directory to set permissions"
+    - /bin/chmod -R 755 $DEPLOYPATH/media 2>/dev/null || echo "No media directory to set permissions"
+    
+    # Create images directory if it doesn't exist
+    - /bin/mkdir -p $DEPLOYPATH/images
+    
+    # Log completion
+    - echo "Deployment completed. Images and static files copied to public_html"
