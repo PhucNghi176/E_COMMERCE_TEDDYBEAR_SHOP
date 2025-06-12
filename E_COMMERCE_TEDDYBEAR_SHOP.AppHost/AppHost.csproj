@@ -18,7 +18,7 @@
     <ItemGroup>
         <ProjectReference Include="..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj"/>
         <ProjectReference Include="..\COMMAND\COMMAND.API\COMMAND.API.csproj"/>
-        <ProjectReference Include="..\QUERRY\QUERRY.API\QUERRY.API.csproj"/>
+        <ProjectReference Include="..\QUERY\QUERY.API\QUERY.API.csproj" />
     </ItemGroup>
 
 </Project>
