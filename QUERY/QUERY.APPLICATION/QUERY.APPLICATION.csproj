@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="UseCases\Events\" />
+      <Folder Include="UseCases\Queries\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
+      <ProjectReference Include="..\QUERY.CONTRACT\QUERY.CONTRACT.csproj" />
+    </ItemGroup>
+
+</Project>
