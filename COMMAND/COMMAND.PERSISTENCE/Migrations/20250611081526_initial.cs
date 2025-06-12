@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,7 +10,7 @@ namespace COMMAND.PERSISTENCE.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "OutboxMessages",
                 columns: table => new
                 {
@@ -24,10 +23,10 @@ namespace COMMAND.PERSISTENCE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
+                    _ = table.PrimaryKey("PK_OutboxMessages", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -46,10 +45,10 @@ namespace COMMAND.PERSISTENCE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    _ = table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -59,10 +58,10 @@ namespace COMMAND.PERSISTENCE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    _ = table.PrimaryKey("PK_Tags", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "ProductTags",
                 columns: table => new
                 {
@@ -71,14 +70,14 @@ namespace COMMAND.PERSISTENCE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductTags", x => new { x.ProductId, x.TagId });
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_ProductTags", x => new { x.ProductId, x.TagId });
+                    _ = table.ForeignKey(
                         name: "FK_ProductTags_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "FK_ProductTags_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
@@ -86,12 +85,12 @@ namespace COMMAND.PERSISTENCE.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_ProductTags_TagId",
                 table: "ProductTags",
                 column: "TagId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Tags_Name",
                 table: "Tags",
                 column: "Name",
@@ -101,16 +100,16 @@ namespace COMMAND.PERSISTENCE.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "OutboxMessages");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "ProductTags");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Products");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Tags");
         }
     }
