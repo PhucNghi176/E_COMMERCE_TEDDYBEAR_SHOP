@@ -1,15 +1,13 @@
 ﻿using CONTRACT.CONTRACT.API.DependencyInjection.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
+
+namespace QUERY.API.DependencyInjection.Extensions;
 public static class SwaggerExtensions
 {
     public static void AddSwaggerAPI(this IServiceCollection services)
@@ -20,9 +18,9 @@ public static class SwaggerExtensions
             {
                 Description = @"JWT Authorization header using the Bearer scheme. 
 
-Enter  your token in the text input below.
+Enter your token in the text input below.
 
-Example: 'ey12345abcdef'",
+Example: 'Bearer 12345abcdef'",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,
@@ -50,26 +48,11 @@ Example: 'ey12345abcdef'",
 
             c.OperationFilter<SwaggerFormDataOperationFilter>();
 
-            // c.EnableAnnotations();
+            c.EnableAnnotations();
+
+            c.UseOneOfForPolymorphism();
         });
         _ = services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-    }
-
-    public static void UseSwaggerAPI(this WebApplication app)
-    {
-        _ = app.UseSwagger();
-        _ = app.UseSwaggerUI(options =>
-        {
-            foreach (var version in app.DescribeApiVersions().Select(version => version.GroupName))
-                options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version);
-            options.EnableFilter();
-            options.DisplayRequestDuration();
-            options.EnableTryItOutByDefault();
-            options.DocExpansion(DocExpansion.None);
-        });
-
-        _ = app.MapGet("/", () => Results.Redirect("/swagger/index.html"))
-            .WithTags(string.Empty);
     }
 
     private class SwaggerFormDataOperationFilter : IOperationFilter
@@ -84,6 +67,7 @@ Example: 'ey12345abcdef'",
 
             if (formParameters.Count == 0) return;
             foreach (var param in formParameters)
+            {
                 operation.RequestBody = new OpenApiRequestBody
                 {
                     Content =
@@ -95,6 +79,25 @@ Example: 'ey12345abcdef'",
                         }
                     }
                 };
+            }
         }
+    }
+
+    public static void UseSwaggerAPI(this WebApplication app)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            foreach (var version in app.DescribeApiVersions().Select(version => version.GroupName))
+                options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version);
+
+            options.EnableFilter();
+            options.DisplayRequestDuration();
+            options.EnableTryItOutByDefault();
+            options.DocExpansion(DocExpansion.None);
+        });
+
+        app.MapGet("/", () => Results.Redirect("/swagger/index.html"))
+            .WithTags(string.Empty);
     }
 }

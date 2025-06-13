@@ -91,6 +91,7 @@ Example: 'Bearer 12345abcdef'",
             foreach (var version in app.DescribeApiVersions().Select(version => version.GroupName))
                 options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version);
 
+            options.EnableFilter();
             options.DisplayRequestDuration();
             options.EnableTryItOutByDefault();
             options.DocExpansion(DocExpansion.None);
