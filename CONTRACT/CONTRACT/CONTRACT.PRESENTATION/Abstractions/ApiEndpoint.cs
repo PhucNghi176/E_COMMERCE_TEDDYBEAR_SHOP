@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 public abstract class ApiEndpoint
 {
-    public static IResult HandlerFailure(Result result)
+    protected static IResult HandlerFailure(Result result)
     {
         return result switch
         {
