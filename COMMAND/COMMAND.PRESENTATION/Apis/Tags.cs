@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Routing;
 namespace COMMAND.PRESENTATION.Apis;
 public class Tags : ApiEndpoint, ICarterModule
 {
-    private const string BaseUrl = "api/{version:apiVersion}/tags";
+    private const string BaseUrl = "api/v{version:apiVersion}/tags";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
