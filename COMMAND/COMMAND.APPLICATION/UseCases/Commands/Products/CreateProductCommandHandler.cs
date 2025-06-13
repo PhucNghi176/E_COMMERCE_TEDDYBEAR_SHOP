@@ -2,10 +2,14 @@
 using CONTRACT.CONTRACT.CONTRACT.Abstractions.Shared;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.DOMAIN.Entities;
+using CONTRACT.CONTRACT.DOMAIN.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace COMMAND.APPLICATION.UseCases.Commands.Products;
 public sealed class
-    CreateProductCommandHandler(IRepositoryBase<Product, int> repositoryBase)
+    CreateProductCommandHandler(
+        IRepositoryBase<Product, int> repositoryBase,
+        IRepositoryBase<Tag, int> tagRepository)
     : ICommandHandler<CONTRACT.Services.Products.Commands.CreateProductCommand>
 {
     public async Task<Result> Handle(CONTRACT.Services.Products.Commands.CreateProductCommand request,
@@ -24,6 +28,11 @@ public sealed class
         {
             foreach (var tagId in request.TagIds)
             {
+                var tag = await tagRepository.FindSingleAsync(x => x.Id.Equals(tagId), cancellationToken);
+                if (tag is null)
+                {
+                    throw new TagException.TagNotFoundException();
+                }
                 product.ProductTags.Add(new ProductTag
                 {
                     Product = product,

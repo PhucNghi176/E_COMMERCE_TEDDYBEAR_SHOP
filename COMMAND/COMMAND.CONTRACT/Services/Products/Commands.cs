@@ -11,5 +11,5 @@ public static class Commands
         int[]? TagIds,
         int Quantity = 1,
         decimal Price = 0.1m
-    ) : ICommand<int>, ICommand;
+    ) : ICommand;
 }
