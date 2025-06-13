@@ -6,7 +6,6 @@ using COMMAND.INFRASTRUCTURE.DependencyInjection.Extensions;
 using COMMAND.PERSISTENCE.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
@@ -15,7 +14,6 @@ using ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Aspire ServiceDefaults (includes OpenTelemetry, health checks, service discovery)
 builder.AddServiceDefaults();
 
 Log.Logger = new LoggerConfiguration()
@@ -57,6 +55,7 @@ builder.Services.ConfigureCors();
 
 // API Layer
 builder.Services.AddJwtAuthenticationAPI1(builder.Configuration);
+builder.Services.AddAuthorization();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddHttpContextAccessor();
 
@@ -73,9 +72,9 @@ builder.Services.AddRepositoryPersistence();
 
 // Infrastructure Layer
 builder.Services.AddServicesInfrastructure();
-//builder.Services.AddRedisInfrastructure(builder.Configuration);
+builder.Services.AddRedisInfrastructure(builder.Configuration);
 //builder.Services.AddMasstransitRabbitMQInfrastructure(builder.Configuration);
-builder.Services.AddQuartzInfrastructure();
+//builder.Services.AddQuartzInfrastructure();
 builder.Services.AddMediatRInfrastructure();
 //builder.Services.ConfigureCloudinaryOptionsInfrastructure(builder.Configuration.GetSection(nameof(CloudinaryOptions)));
 //builder.Services.ConfigureMailOptionsInfrastructure(builder.Configuration.GetSection(nameof(MailOption)));
@@ -90,7 +89,6 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-CSRF-TOKEN"; // Default header for token validation
 });
 
-builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -102,7 +100,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 // if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
-app.UseSwaggerAPI(); // => After MapCarter => Show Version
+app.UseSwaggerAPI1(); // => After MapCarter => Show Version
 
 app.UseCors("CorsPolicy");
 

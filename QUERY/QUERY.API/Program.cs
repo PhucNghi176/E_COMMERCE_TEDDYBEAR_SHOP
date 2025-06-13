@@ -9,15 +9,18 @@ using QUERY.APPLICATION.DependencyInjection.Extensions;
 using QUERY.INFRASTRUCTURE.DependencyInjection.Extensions;
 using QUERY.PERSISTENCE.DependencyInjection.Extensions;
 using Serilog;
+using Serilog.Events;
 using ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-Log.Logger = new LoggerConfiguration().ReadFrom
-    .Configuration(builder.Configuration)
-    .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 builder.Logging
     .ClearProviders()
@@ -49,35 +52,38 @@ builder.Services
 
 builder.Services.ConfigureCors();
 
+//API Layer
+builder.Services.AddJwtAuthenticationAPI1(builder.Configuration);
+builder.Services.AddAuthorization();
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+builder.Services.AddHttpContextAccessor();
+
 // Application Layer
 builder.Services.AddMediatRApplication();
 
 // Persistence Layer
-
-// =====================>
 builder.Services.ConfigureSqlServerRetryOptionsPersistence(
     builder.Configuration.GetSection(nameof(SqlServerRetryOptions))
 );
-
-// =====================>
 builder.Services.AddSqlServerPersistence();
-
 builder.Services.AddRepositoryPersistence();
 builder.Services.ConfigureServicesInfrastructure(builder.Configuration);
 
 // Infrastructure Layer
 builder.Services.AddServicesInfrastructure();
-//builder.Services.AddRedisInfrastructure(builder.Configuration);
+builder.Services.AddRedisInfrastructure(builder.Configuration);
 builder.Services.AddMediatRInfrastructure();
 //builder.Services.AddMasstransitRabbitMqInfrastructure(builder.Configuration);
 // builder.Services.ConfigureHealthChecks(builder.Configuration);
-builder.Services.AddJwtAuthenticationAPI1(builder.Configuration);
+//builder.Services.AddJwtAuthenticationAPI1(builder.Configuration);
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -93,8 +99,6 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication(); // Need to be before app.UseAuthorization();
 app.UseAuthorization();
 
-// app.MapDefaultHealthChecks();
-// app.MapDefaultHealthChecksUI();
 
 // 7. Map Carter endpoints
 app.MapCarter();
