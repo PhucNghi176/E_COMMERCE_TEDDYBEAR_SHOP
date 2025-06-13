@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +10,7 @@ using Q = QUERY.CONTRACT.Services.Tags.Query;
 namespace QUERY.PRESENTATION.Apis;
 public class Tags : ApiEndpoint, ICarterModule
 {
-    private const string BaseUrl = "api/{version:apiVersion}/tags";
+    private const string BaseUrl = "api/v{version:apiVersion}/tags";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -22,9 +22,9 @@ public class Tags : ApiEndpoint, ICarterModule
             .WithSummary("Get all tags");
     }
 
-    private static async Task<IResult> GetTagsAsync(
-        [FromRoute]Q.GetTagsQuery query, ISender sender)
+    private static async Task<IResult> GetTagsAsync(ISender sender)
     {
+        var query = new Q.GetTagsQuery();
         var result = await sender.Send(query);
         return result.IsFailure ? HandlerFailure(result) : Results.Ok(result);
     }
