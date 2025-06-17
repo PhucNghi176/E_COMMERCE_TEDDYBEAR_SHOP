@@ -12,7 +12,7 @@ COPY QUERY/QUERY.API/. .
 COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
 
 # Restore packages
-RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj
+RUN dotnet restore QUERY/QUERY.API.csproj
 
 # Copy all source code
 COPY . ./

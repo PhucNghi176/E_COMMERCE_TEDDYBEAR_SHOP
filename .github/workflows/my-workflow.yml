@@ -21,7 +21,6 @@ jobs:
 
       - name: Build with Docker Compose
         run: docker compose build
-
   
   deploy:
     runs-on: [ self-hosted ]
