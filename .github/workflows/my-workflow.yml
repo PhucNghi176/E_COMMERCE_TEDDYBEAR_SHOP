@@ -20,7 +20,7 @@ jobs:
           echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
 
       - name: Build with Docker Compose
-        run: docker compose build
+        run: sudo docker compose build
   
   deploy:
     runs-on: [ self-hosted ]
