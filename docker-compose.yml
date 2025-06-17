@@ -1,0 +1,32 @@
+services:
+ # command-api:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.command
+#    container_name: command-api
+#    ports:
+#      - "1706:8080"
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+#    networks:
+#      - app-network
+#    volumes:
+#      - ./COMMAND/COMMAND.API/appsettings.json:/app/appsettings.json:ro
+
+  query-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.query
+    container_name: query-api
+    ports:
+      - "1906:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app-network
+    volumes:
+      - ./QUERY/QUERY.API/appsettings.json:/app/appsettings.json:ro
+
+networks:
+  app-network:
+    driver: bridge

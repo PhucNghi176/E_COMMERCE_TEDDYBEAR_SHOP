@@ -1,0 +1,35 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+
+WORKDIR /src
+
+# Copy solution file
+COPY *.sln ./
+
+# Copy COMMAND project files
+COPY COMMAND/COMMAND.API/*.csproj COMMAND/COMMAND.API/
+COPY COMMAND/COMMAND.APPLICATION/*.csproj COMMAND/COMMAND.APPLICATION/
+COPY COMMAND/COMMAND.APPLICATION.TEST/*.csproj COMMAND/COMMAND.APPLICATION.TEST/
+COPY COMMAND/COMMAND.INFRASTRUCTURE/*.csproj COMMAND/COMMAND.INFRASTRUCTURE/
+COPY COMMAND/COMMAND.PERSISTENCE/*.csproj COMMAND/COMMAND.PERSISTENCE/
+COPY COMMAND/COMMAND.PRESENTATION/*.csproj COMMAND/COMMAND.PRESENTATION/
+COPY COMMAND/COMMAND.CONTRACT/*.csproj COMMAND/COMMAND.CONTRACT/
+
+# Copy the shared CONTRACT project (now accessible)
+COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
+
+# Restore packages
+RUN dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj
+
+# Copy all source code
+COPY . ./
+
+# Build and publish the COMMAND API
+WORKDIR /src/COMMAND/COMMAND.API
+RUN dotnet publish -c Release -o /app/out
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+ENTRYPOINT ["dotnet", "COMMAND.API.dll"]

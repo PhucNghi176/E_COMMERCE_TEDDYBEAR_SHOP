@@ -1,0 +1,29 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+
+WORKDIR /src
+
+# Copy solution file
+COPY *.sln ./
+
+# Copy QUERY project files
+COPY QUERY/QUERY.API/. .
+
+# Copy the shared CONTRACT project (now accessible)
+COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
+
+# Restore packages
+RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj
+
+# Copy all source code
+COPY . ./
+
+# Build and publish the QUERY API
+WORKDIR /src/QUERY/QUERY.API
+RUN dotnet publish -c Release -o /app/out
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+ENTRYPOINT ["dotnet", "QUERY.API.dll"]
