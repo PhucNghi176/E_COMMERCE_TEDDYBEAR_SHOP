@@ -19,8 +19,8 @@ jobs:
         run: |
           echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
 
-      - name: Build Docker Image
-        run: docker build -t QUERY:latest -f Dockerfile.query .
+      - name: Build with Docker Compose
+        run: docker-compose build
   
   deploy:
     runs-on: [self-hosted]
@@ -47,6 +47,6 @@ jobs:
             git pull origin main
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             docker-compose down
-            docker-compose pull
-            docker-compose up -d --build
+            docker-compose build --no-cache
+            docker-compose up -d
             docker system prune -f
