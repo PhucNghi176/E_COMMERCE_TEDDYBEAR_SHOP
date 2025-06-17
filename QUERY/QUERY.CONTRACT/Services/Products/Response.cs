@@ -6,8 +6,13 @@ public static class Response
         string Name,
         int Quantity,
         decimal Price,
-        string[] Tags,
+        string size,
+        TagResponse[] Tags,
         string[] ImgUrl,
         string[] Color,
         DateTimeOffset CreatedOnUtc);
+
+    public record TagResponse(
+        int Id,
+        string Name);
 }

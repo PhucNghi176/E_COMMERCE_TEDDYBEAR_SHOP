@@ -15,16 +15,18 @@ internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repo
         CancellationToken cancellationToken)
     {
         var query = repositoryBase.FindAll();
-    
+
         if (!string.IsNullOrWhiteSpace(request.searchTerm))
         {
             query = query.Where(p =>
                 p.Name.Contains(request.searchTerm) ||
-                p.Color.Contains(request.searchTerm));
+                p.Color.Contains(request.searchTerm) ||
+                p.ProductTags.Any(x => x.Tag.Name.Contains(request.searchTerm))
+            );
         }
 
         query = query.Include(x => x.ProductTags);
-    
+
         query = request.sortOrder == SortOrder.Descending
             ? query.OrderByDescending(GetSortProperty(request))
             : query.OrderBy(GetSortProperty(request));
@@ -35,11 +37,14 @@ internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repo
             product.Name,
             product.Quantity,
             product.Price,
-            product.ProductTags.Select(x => x.Tag.Name).ToArray(),
+            product.Size,
+            product.ProductTags.Select(tag => new Response.TagResponse(
+                tag.Tag.Id,
+                tag.Tag.Name)).ToArray(),
             product.ImgUrl.ToArray(),
             product.Color.ToArray(),
             product.CreatedOnUtc)).ToList();
-        
+
         return new PagedResult<Response.ProductResponse>(mappedProducts, products.PageIndex,
             products.PageSize, products.TotalCount);
     }
