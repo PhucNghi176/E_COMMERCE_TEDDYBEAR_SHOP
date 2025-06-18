@@ -6,6 +6,7 @@ using COMMAND.INFRASTRUCTURE.DependencyInjection.Extensions;
 using COMMAND.PERSISTENCE.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
+using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
@@ -76,7 +77,7 @@ builder.Services.AddRedisInfrastructure(builder.Configuration);
 //builder.Services.AddMasstransitRabbitMQInfrastructure(builder.Configuration);
 //builder.Services.AddQuartzInfrastructure();
 builder.Services.AddMediatRInfrastructure();
-//builder.Services.ConfigureCloudinaryOptionsInfrastructure(builder.Configuration.GetSection(nameof(CloudinaryOptions)));
+builder.Services.ConfigureCloudinaryOptionsInfrastructure(builder.Configuration.GetSection(nameof(CloudinaryOptions)));
 //builder.Services.ConfigureMailOptionsInfrastructure(builder.Configuration.GetSection(nameof(MailOption)));
 
 
