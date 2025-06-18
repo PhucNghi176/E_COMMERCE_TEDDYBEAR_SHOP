@@ -1,5 +1,5 @@
 services:
- command-api:
+  command-api:
    build:
      context: .
      dockerfile: Dockerfile.command
