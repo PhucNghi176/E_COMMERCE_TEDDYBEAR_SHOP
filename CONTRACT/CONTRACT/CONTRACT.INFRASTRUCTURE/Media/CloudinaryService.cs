@@ -4,15 +4,8 @@ using CONTRACT.CONTRACT.APPLICATION.Abstractions;
 using Microsoft.AspNetCore.Http;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Media;
-public class CloudinaryService : IMediaService
+public class CloudinaryService(Cloudinary cloudinary) : IMediaService
 {
-    private readonly Cloudinary _cloudinary;
-
-    public CloudinaryService(Cloudinary cloudinary)
-    {
-        _cloudinary = cloudinary;
-    }
-
     public async Task<string> UploadImageAsync(IFormFile file)
     {
         if (file == null || file.Length == 0) throw new ArgumentException("File is empty or null.", nameof(file));
@@ -23,7 +16,7 @@ public class CloudinaryService : IMediaService
         {
             File = new FileDescription(file.FileName, stream)
         };
-        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        var uploadResult = await cloudinary.UploadAsync(uploadParams);
         return uploadResult.SecureUrl.ToString();
     }
 
