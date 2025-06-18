@@ -12,10 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Consumer\MessageBus\Consumers\Events\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
     </ItemGroup>
 

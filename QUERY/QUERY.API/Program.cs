@@ -73,9 +73,6 @@ builder.Services.ConfigureServicesInfrastructure(builder.Configuration);
 builder.Services.AddServicesInfrastructure();
 builder.Services.AddRedisInfrastructure(builder.Configuration);
 builder.Services.AddMediatRInfrastructure();
-//builder.Services.AddMasstransitRabbitMqInfrastructure(builder.Configuration);
-// builder.Services.ConfigureHealthChecks(builder.Configuration);
-//builder.Services.AddJwtAuthenticationAPI1(builder.Configuration);
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
