@@ -19,6 +19,7 @@ public sealed class
         {
             Name = request.Name,
             Size = request.Size,
+            PrimaryImgUrl = request.PrimaryImgUrl,
             Quantity = request.Quantity,
             Price = request.Price,
             Color = request.Color,
@@ -33,6 +34,7 @@ public sealed class
                 {
                     throw new TagException.TagNotFoundException();
                 }
+
                 product.ProductTags.Add(new ProductTag
                 {
                     Product = product,

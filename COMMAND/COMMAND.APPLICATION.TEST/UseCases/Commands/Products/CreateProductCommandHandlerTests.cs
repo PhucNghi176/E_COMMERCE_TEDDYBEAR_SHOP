@@ -8,7 +8,6 @@ using Moq;
 using Xunit;
 
 namespace COMMAND.APPLICATION.TEST.UseCases.Commands.Products;
-
 public class CreateProductCommandHandlerTests
 {
     private readonly Mock<IRepositoryBase<Product, int>> _mockProductRepository;
@@ -29,9 +28,10 @@ public class CreateProductCommandHandlerTests
         var command = new COMMAND.CONTRACT.Services.Products.Commands.CreateProductCommand(
             Name: "Test Teddy Bear",
             Size: "Large",
-            Color: new[] { "Brown", "White" },
-            ImgUrl: new[] { "https://example.com/image1.jpg" },
+            Color: ["Brown", "White"],
+            ImgUrl: ["https://example.com/image1.jpg"],
             TagIds: null,
+            PrimaryImgUrl: "", // PrimaryImgUrl is not used in this test
             Quantity: 5,
             Price: 29.99m
         );
@@ -43,7 +43,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.Name == "Test Teddy Bear" &&
             p.Size == "Large" &&
             p.Color!.SequenceEqual(new[] { "Brown", "White" }) &&
@@ -64,13 +64,17 @@ public class CreateProductCommandHandlerTests
             Color: new[] { "Blue" },
             ImgUrl: new[] { "https://example.com/image2.jpg", "https://example.com/image3.jpg" },
             TagIds: new[] { 1, 2, 3 },
+            PrimaryImgUrl: "",
             Quantity: 10,
             Price: 49.99m
         );
 
         // Setup tag repository to return valid tags using FindSingleAsync
-        _mockTagRepository.Setup(r => r.FindSingleAsync(It.Is<System.Linq.Expressions.Expression<Func<Tag, bool>>>(expr => true), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
-            .ReturnsAsync((System.Linq.Expressions.Expression<Func<Tag, bool>> predicate, CancellationToken ct, System.Linq.Expressions.Expression<Func<Tag, object>>[] includes) =>
+        _mockTagRepository.Setup(r =>
+                r.FindSingleAsync(It.Is<System.Linq.Expressions.Expression<Func<Tag, bool>>>(expr => true),
+                    It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
+            .ReturnsAsync((System.Linq.Expressions.Expression<Func<Tag, bool>> predicate, CancellationToken ct,
+                System.Linq.Expressions.Expression<Func<Tag, object>>[] includes) =>
             {
                 // Simulate finding tags by ID
                 var compiled = predicate.Compile();
@@ -87,7 +91,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.Name == "Premium Teddy Bear" &&
             p.Size == "Medium" &&
             p.Color!.SequenceEqual(new[] { "Blue" }) &&
@@ -101,7 +105,10 @@ public class CreateProductCommandHandlerTests
         )), Times.Once);
 
         // Verify that tag repository was called to validate tags
-        _mockTagRepository.Verify(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()), Times.Exactly(3));
+        _mockTagRepository.Verify(
+            r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()),
+            Times.Exactly(3));
     }
 
     [Fact]
@@ -114,6 +121,7 @@ public class CreateProductCommandHandlerTests
             Color: new[] { "Red" },
             ImgUrl: new[] { "https://example.com/image4.jpg" },
             TagIds: Array.Empty<int>(),
+            PrimaryImgUrl: "",
             Quantity: 3,
             Price: 19.99m
         );
@@ -125,7 +133,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.Name == "Simple Teddy Bear" &&
             p.ProductTags.Count == 0
         )), Times.Once);
@@ -140,6 +148,7 @@ public class CreateProductCommandHandlerTests
             Size: "Medium",
             Color: new[] { "Brown" },
             ImgUrl: null,
+            PrimaryImgUrl: "",
             TagIds: null
         ); // Using default Quantity = 1, Price = 0.1m
 
@@ -150,7 +159,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.Name == "Default Teddy Bear" &&
             p.Size == "Medium" &&
             p.Color!.SequenceEqual(new[] { "Brown" }) &&
@@ -172,11 +181,13 @@ public class CreateProductCommandHandlerTests
             ImgUrl: new[] { "https://example.com/image5.jpg" },
             TagIds: new[] { 42 },
             Quantity: 7,
+            PrimaryImgUrl: "",
             Price: 35.50m
         );
 
         // Setup tag repository to return valid tag using FindSingleAsync
-        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
+        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
             .ReturnsAsync(new Tag { Id = 42, Name = "SpecialTag" });
 
         var cancellationToken = CancellationToken.None;
@@ -186,14 +197,17 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.ProductTags.Count == 1 &&
             p.ProductTags.First().TagId == 42 &&
             p.ProductTags.First().Product == p
         )), Times.Once);
 
         // Verify that tag repository was called to validate tag
-        _mockTagRepository.Verify(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()), Times.Once);
+        _mockTagRepository.Verify(
+            r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()),
+            Times.Once);
     }
 
     [Fact]
@@ -207,12 +221,15 @@ public class CreateProductCommandHandlerTests
             ImgUrl: new[] { "https://example.com/image6.jpg" },
             TagIds: new[] { 10, 20 },
             Quantity: 2,
+            PrimaryImgUrl: "",
             Price: 25.00m
         );
 
         // Setup tag repository to return valid tags using FindSingleAsync
-        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
-            .ReturnsAsync((System.Linq.Expressions.Expression<Func<Tag, bool>> predicate, CancellationToken ct, System.Linq.Expressions.Expression<Func<Tag, object>>[] includes) =>
+        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
+            .ReturnsAsync((System.Linq.Expressions.Expression<Func<Tag, bool>> predicate, CancellationToken ct,
+                System.Linq.Expressions.Expression<Func<Tag, object>>[] includes) =>
             {
                 var compiled = predicate.Compile();
                 if (compiled(new Tag { Id = 10, Name = "Tag10" })) return new Tag { Id = 10, Name = "Tag10" };
@@ -227,7 +244,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.ProductTags.All(pt => pt.Product == p) &&
             p.ProductTags.Count == 2
         )), Times.Once);
@@ -247,6 +264,7 @@ public class CreateProductCommandHandlerTests
             Color: new[] { "Brown" },
             ImgUrl: new[] { "https://example.com/test.jpg" },
             TagIds: null,
+            PrimaryImgUrl: "",
             Quantity: quantity,
             Price: price
         );
@@ -258,7 +276,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.Name == name &&
             p.Size == size &&
             p.Quantity == quantity &&
@@ -275,6 +293,7 @@ public class CreateProductCommandHandlerTests
             Name: "Rainbow Bear",
             Size: "Large",
             Color: colors,
+            PrimaryImgUrl: "",
             ImgUrl: new[] { "https://example.com/rainbow.jpg" },
             TagIds: null,
             Quantity: 1,
@@ -288,7 +307,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.Color!.SequenceEqual(colors)
         )), Times.Once);
     }
@@ -297,10 +316,11 @@ public class CreateProductCommandHandlerTests
     public async Task Handle_CommandWithMultipleImages_ShouldCreateProductWithAllImages()
     {
         // Arrange
-        var images = new[] { 
-            "https://example.com/front.jpg", 
-            "https://example.com/back.jpg", 
-            "https://example.com/side.jpg" 
+        var images = new[]
+        {
+            "https://example.com/front.jpg",
+            "https://example.com/back.jpg",
+            "https://example.com/side.jpg"
         };
         var command = new COMMAND.CONTRACT.Services.Products.Commands.CreateProductCommand(
             Name: "Multi-Image Bear",
@@ -309,6 +329,7 @@ public class CreateProductCommandHandlerTests
             ImgUrl: images,
             TagIds: null,
             Quantity: 5,
+            PrimaryImgUrl: "",
             Price: 45.00m
         );
 
@@ -319,7 +340,7 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p => 
+        _mockProductRepository.Verify(r => r.Add(It.Is<Product>(p =>
             p.ImgUrl!.SequenceEqual(images)
         )), Times.Once);
     }
@@ -333,14 +354,17 @@ public class CreateProductCommandHandlerTests
             Size: "Medium",
             Color: new[] { "Brown" },
             ImgUrl: null,
+            PrimaryImgUrl: "",
             TagIds: new[] { 1, 2 },
             Quantity: 1,
             Price: 25.00m
         );
 
         // Setup tag repository to return valid tags using FindSingleAsync
-        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
-            .ReturnsAsync((System.Linq.Expressions.Expression<Func<Tag, bool>> predicate, CancellationToken ct, System.Linq.Expressions.Expression<Func<Tag, object>>[] includes) =>
+        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
+            .ReturnsAsync((System.Linq.Expressions.Expression<Func<Tag, bool>> predicate, CancellationToken ct,
+                System.Linq.Expressions.Expression<Func<Tag, object>>[] includes) =>
             {
                 var compiled = predicate.Compile();
                 if (compiled(new Tag { Id = 1, Name = "Tag1" })) return new Tag { Id = 1, Name = "Tag1" };
@@ -355,9 +379,12 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        
+
         // Verify that tag repository was called to validate tags
-        _mockTagRepository.Verify(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()), Times.Exactly(2));
+        _mockTagRepository.Verify(
+            r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()),
+            Times.Exactly(2));
     }
 
     [Fact]
@@ -368,6 +395,7 @@ public class CreateProductCommandHandlerTests
             Name: "Test Bear",
             Size: "Medium",
             Color: new[] { "Brown" },
+            PrimaryImgUrl: "",
             ImgUrl: null,
             TagIds: new[] { 999 }, // Non-existent tag
             Quantity: 1,
@@ -375,18 +403,21 @@ public class CreateProductCommandHandlerTests
         );
 
         // Setup tag repository to return null for non-existent tag
-        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
+        _mockTagRepository.Setup(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()))
             .ReturnsAsync((Tag?)null);
 
         var cancellationToken = CancellationToken.None;
 
         // Act & Assert
-        await Assert.ThrowsAsync<TagException.TagNotFoundException>(
-            () => _handler.Handle(command, cancellationToken));
+        await Assert.ThrowsAsync<TagException.TagNotFoundException>(() => _handler.Handle(command, cancellationToken));
 
         // Verify that tag repository was called
-        _mockTagRepository.Verify(r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(), It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()), Times.Once);
-        
+        _mockTagRepository.Verify(
+            r => r.FindSingleAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Tag, bool>>>(),
+                It.IsAny<CancellationToken>(), It.IsAny<System.Linq.Expressions.Expression<Func<Tag, object>>[]>()),
+            Times.Once);
+
         // Verify that product repository was NOT called since validation failed
         _mockProductRepository.Verify(r => r.Add(It.IsAny<Product>()), Times.Never);
     }

@@ -9,6 +9,7 @@ public static class Commands
         string[]? Color,
         string[]? ImgUrl,
         int[]? TagIds,
+        string PrimaryImgUrl,
         int Quantity = 1,
         decimal Price = 0.1m
     ) : ICommand;
