@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            cd /home/teddybear
+            cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
             git pull origin main
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             docker compose down
