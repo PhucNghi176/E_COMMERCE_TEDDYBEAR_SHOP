@@ -486,3 +486,5 @@ BEAUTIFY_COMMAND.API/logs
 /COMMAND/COMMAND.API/appsettings.json
 /QUERY/QUERY.API/appsettings.Development.json
 /QUERY/QUERY.API/appsettings.json
+/AUTHORIZATION/AUTHORIZATION.API/appsettings.Development.json
+/AUTHORIZATION/AUTHORIZATION.API/appsettings.json
