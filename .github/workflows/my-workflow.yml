@@ -10,18 +10,19 @@ jobs:
     runs-on: [ self-hosted ]
     steps:
       - uses: actions/checkout@v3
+
       - name: Write appsetting
-        env:
-          APPSETTING: ${{ secrets.APPSETTING }}
         run: |
-          echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
+          mkdir -p QUERY/QUERY.API
+          cat <<EOF > QUERY/QUERY.API/appsettings.json
+          ${{ secrets.APPSETTING }}
+          EOF
 
       - name: Build with Docker Compose
         env:
           COMPOSE_BAKE: true
         run: docker compose build
 
-  
   deploy:
     runs-on: [ self-hosted ]
     needs: build
@@ -30,23 +31,32 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Prepare Configuration
-        env:
-          APPSETTING: ${{ secrets.APPSETTING }}
         run: |
-          echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
+          mkdir -p QUERY/QUERY.API
+          cat <<EOF > QUERY/QUERY.API/appsettings.json
+          ${{ secrets.APPSETTING }}
+          EOF
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
             cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
             git pull origin main
-            echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
-            echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
+
+            mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API
+            cat <<EOF > QUERY/QUERY.API/appsettings.json
+            ${{ secrets.APPSETTING }}
+            EOF
+
+            cat <<EOF > COMMAND/COMMAND.API/appsettings.json
+            ${{ secrets.APPSETTING }}
+            EOF
+
             docker compose down
             docker compose build --no-cache
             docker compose up -d
