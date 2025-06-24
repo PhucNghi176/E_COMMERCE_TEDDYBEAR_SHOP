@@ -24,8 +24,10 @@ jobs:
 
       - name: Pull latest code
         run: |
-          cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-          git pull origin main
+              mkdir -p /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+              cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+              git pull origin main
+
 
       - name: Docker Compose Build & Deploy
         run: |
