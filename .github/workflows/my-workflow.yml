@@ -26,7 +26,7 @@ jobs:
         run: |
              sudo mkdir -p /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
               if [ ! -d /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP/.git ]; then
-              git clone https://github.com/PhucNghi176/E_COMMERCE_TEDDYBEAR_SHOP.git /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+             sudo git clone https://github.com/PhucNghi176/E_COMMERCE_TEDDYBEAR_SHOP.git /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
               fi
               cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
               git pull origin main
