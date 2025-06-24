@@ -6,56 +6,31 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: [ self-hosted ]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write appsetting
+      - name: Write appsettings
         run: |
-          mkdir -p QUERY/QUERY.API
+          mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API
           cat <<EOF > QUERY/QUERY.API/appsettings.json
           ${{ secrets.APPSETTING }}
           EOF
 
-      - name: Build with Docker Compose
-        run: docker compose build
-
-  deploy:
-    runs-on: [ self-hosted ]
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Prepare Configuration
-        run: |
-          mkdir -p QUERY/QUERY.API
-          cat <<EOF > QUERY/QUERY.API/appsettings.json
+          cat <<EOF > COMMAND/COMMAND.API/appsettings.json
           ${{ secrets.APPSETTING }}
           EOF
 
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.TEST_SSH_HOST }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
-          port: 22
-          script: |
-            cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-            git pull origin main
+      - name: Pull latest code
+        run: |
+          cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+          git pull origin main
 
-            mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API
-            cat <<EOF > QUERY/QUERY.API/appsettings.json
-            ${{ secrets.APPSETTING }}
-            EOF
-
-            cat <<EOF > COMMAND/COMMAND.API/appsettings.json
-            ${{ secrets.APPSETTING }}
-            EOF
-
-            docker compose down
-            docker compose build --no-cache
-            docker compose up -d
-            docker system prune -f
+      - name: Docker Compose Build & Deploy
+        run: |
+          cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+          docker compose down
+          docker compose build --no-cache
+          docker compose up -d
+          docker system prune -f
