@@ -26,7 +26,7 @@ jobs:
         run: |
              sudo mkdir -p /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
               cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-              git pull origin main
+               sudo git pull origin main
 
 
 
