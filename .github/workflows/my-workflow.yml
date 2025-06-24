@@ -24,7 +24,7 @@ jobs:
 
       - name: Pull latest code
         run: |
-              mkdir -p /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+             sudo mkdir -p /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
               cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
               git pull origin main
 
