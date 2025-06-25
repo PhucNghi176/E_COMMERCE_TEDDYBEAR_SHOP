@@ -1,5 +1,4 @@
 using CloudinaryDotNet;
-using COMMAND.INFRASTRUCTURE;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Authentication;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
@@ -16,7 +15,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddServicesInfrastructure(this IServiceCollection services)
     {
-        _ = services
+       services
             .AddTransient<IJwtTokenService, JwtTokenService>()
             .AddTransient<ICacheService, CacheService>()
             .AddSingleton<IMediaService, CloudinaryService>()

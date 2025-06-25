@@ -1,5 +1,4 @@
 using AUTHORIZATION.APPLICATION.Behaviors;
-using COMMAND.APPLICATION;
 using CONTRACT.CONTRACT.APPLICATION.Behaviors;
 using FluentValidation;
 using MediatR;
