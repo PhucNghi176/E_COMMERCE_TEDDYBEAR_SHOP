@@ -1,6 +1,6 @@
-﻿using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
+﻿using System.Security.Claims;
+using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService

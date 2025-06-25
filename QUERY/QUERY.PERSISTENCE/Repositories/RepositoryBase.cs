@@ -1,7 +1,7 @@
+using System.Linq.Expressions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace QUERY.PERSISTENCE.Repositories;
 public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRepositoryBase<TEntity, TKey>, IDisposable
@@ -16,7 +16,8 @@ public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRe
         params Expression<Func<TEntity, object>>[] includeProperties)
     {
         var items = dbContext.Set<TEntity>().AsNoTracking(); // Importance Always include AsNoTracking for Query Side
-        if (includeProperties != null) items = includeProperties.Aggregate(items, (current, includeProperty) => current.Include(includeProperty));
+        if (includeProperties != null)
+            items = includeProperties.Aggregate(items, (current, includeProperty) => current.Include(includeProperty));
 
         if (predicate is not null)
             items = items.Where(predicate);

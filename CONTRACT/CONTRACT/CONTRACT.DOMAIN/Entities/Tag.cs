@@ -1,7 +1,7 @@
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Entities;
 
 namespace CONTRACT.CONTRACT.DOMAIN.Entities;
-public class Tag : Entity<int> ,IAuditableEntity
+public class Tag : Entity<int>, IAuditableEntity
 {
     public string Name { get; set; }
 

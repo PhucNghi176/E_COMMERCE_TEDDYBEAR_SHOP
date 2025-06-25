@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
-      <ProjectReference Include="..\QUERY.CONTRACT\QUERY.CONTRACT.csproj" />
+        <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
+        <ProjectReference Include="..\QUERY.CONTRACT\QUERY.CONTRACT.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Carter" Version="8.2.1" />
+        <PackageReference Include="Carter" Version="8.2.1"/>
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Sdk Name="Aspire.AppHost.Sdk" Version="9.3.1" />
+    <Sdk Name="Aspire.AppHost.Sdk" Version="9.3.1"/>
 
 
     <PropertyGroup>
@@ -12,14 +12,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
-        <PackageReference Include="Aspire.Hosting.Azure.AppService" Version="9.3.1-preview.1.25305.6" />
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1"/>
+        <PackageReference Include="Aspire.Hosting.Azure.AppService" Version="9.3.1-preview.1.25305.6"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj" />
-        <ProjectReference Include="..\COMMAND\COMMAND.API\COMMAND.API.csproj" />
-        <ProjectReference Include="..\QUERY\QUERY.API\QUERY.API.csproj" />
+        <ProjectReference Include="..\AUTHORIZATION\AUTHORIZATION.API\AUTHORIZATION.API.csproj"/>
+        <ProjectReference Include="..\COMMAND\COMMAND.API\COMMAND.API.csproj"/>
+        <ProjectReference Include="..\QUERY\QUERY.API\QUERY.API.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,6 @@ using CONTRACT.CONTRACT.CONTRACT.Abstractions.Shared;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.DOMAIN.Entities;
 using CONTRACT.CONTRACT.DOMAIN.Exceptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace COMMAND.APPLICATION.UseCases.Commands.Products;
 public sealed class
@@ -23,17 +22,13 @@ public sealed class
             Quantity = request.Quantity,
             Price = request.Price,
             Color = request.Color,
-            ImgUrl = request.ImgUrl,
+            ImgUrl = request.ImgUrl
         };
         if (request.TagIds is not null)
-        {
             foreach (var tagId in request.TagIds)
             {
                 var tag = await tagRepository.FindSingleAsync(x => x.Id.Equals(tagId), cancellationToken);
-                if (tag is null)
-                {
-                    throw new TagException.TagNotFoundException();
-                }
+                if (tag is null) throw new TagException.TagNotFoundException();
 
                 product.ProductTags.Add(new ProductTag
                 {
@@ -41,7 +36,6 @@ public sealed class
                     TagId = tagId
                 });
             }
-        }
 
         repositoryBase.Add(product);
         return Result.Success();

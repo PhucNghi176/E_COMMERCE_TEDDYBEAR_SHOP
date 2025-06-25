@@ -1,11 +1,11 @@
-﻿using CONTRACT.CONTRACT.APPLICATION.Abstractions;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using CONTRACT.CONTRACT.APPLICATION.Abstractions;
+using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Authentication;
 public class JwtTokenService : IJwtTokenService

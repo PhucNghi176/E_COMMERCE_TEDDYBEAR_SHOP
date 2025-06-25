@@ -1,8 +1,8 @@
+using System.Collections.Concurrent;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Collections.Concurrent;
 
 namespace CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
 public class CacheService(IDistributedCache distributedCache) : ICacheService

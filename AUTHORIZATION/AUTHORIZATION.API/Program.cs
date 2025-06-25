@@ -7,10 +7,10 @@ using Carter;
 using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using ServiceDefaults;
-using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

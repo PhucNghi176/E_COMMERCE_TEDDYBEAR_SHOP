@@ -54,7 +54,7 @@ Example: 'Bearer 12345abcdef'",
         });
         _ = services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     }
-    
+
 
     public static void UseSwaggerAPI1(this WebApplication app)
     {

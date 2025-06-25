@@ -1,21 +1,14 @@
-using System.Reflection;
 using CloudinaryDotNet;
 using COMMAND.INFRASTRUCTURE;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
-using CONTRACT.CONTRACT.CONTRACT.JsonConverters;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Authentication;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Mail;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Media;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.PipeObservers;
-using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Quartz;
 using StackExchange.Redis;
 
 namespace AUTHORIZATION.INFRASTRUCTURE.DependencyInjection.Extensions;

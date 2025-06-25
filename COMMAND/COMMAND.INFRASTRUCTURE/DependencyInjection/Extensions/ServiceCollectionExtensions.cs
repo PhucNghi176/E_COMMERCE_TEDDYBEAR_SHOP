@@ -1,22 +1,14 @@
 using CloudinaryDotNet;
-using COMMAND.INFRASTRUCTURE.BackgroundJobs;
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
-using CONTRACT.CONTRACT.CONTRACT.JsonConverters;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Authentication;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Mail;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Media;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.PipeObservers;
-using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Quartz;
 using StackExchange.Redis;
-using System.Reflection;
 
 namespace COMMAND.INFRASTRUCTURE.DependencyInjection.Extensions;
 public static class ServiceCollectionExtensions
@@ -49,6 +41,7 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton<IConnectionMultiplexer>(sp =>
             ConnectionMultiplexer.Connect(connectionString ?? "localhost"));
     }
+
     public static void ConfigureCloudinaryOptionsInfrastructure(this IServiceCollection services,
         IConfigurationSection section)
     {

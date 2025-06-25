@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using System.Diagnostics;
+using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace CONTRACT.CONTRACT.APPLICATION.Behaviors;
 public class PerformancePipelineBehavior<TRequest, TResponse>(ILogger<TRequest> logger) :

@@ -11,10 +11,7 @@ internal sealed class UploadImageCommandHandler(IMediaService mediaService)
         CancellationToken cancellationToken)
     {
         var result = await mediaService.UploadImageAsync(request.File);
-        if (result is null)
-        {
-            throw new ImageUploadFailException();
-        }
+        if (result is null) throw new ImageUploadFailException();
 
         return Result.Success(result);
     }

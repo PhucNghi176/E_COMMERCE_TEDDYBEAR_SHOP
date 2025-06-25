@@ -1,4 +1,5 @@
 ﻿using Carter;
+using COMMAND.CONTRACT.Services.Products;
 using CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -18,7 +19,7 @@ public class ProductApi : ApiEndpoint, ICarterModule
     }
 
     private static async Task<IResult> CreateProduct(
-        [FromBody] COMMAND.CONTRACT.Services.Products.Commands.CreateProductCommand command,
+        [FromBody] Commands.CreateProductCommand command,
         ISender sender)
     {
         var result = await sender.Send(command);

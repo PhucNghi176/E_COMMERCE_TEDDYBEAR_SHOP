@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Class1.cs" />
+        <Compile Remove="Class1.cs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
+        <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
     </ItemGroup>
 
 </Project>

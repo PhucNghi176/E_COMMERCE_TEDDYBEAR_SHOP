@@ -3,9 +3,8 @@ using CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Q = QUERY.CONTRACT.Services.Tags.Query;
+using QUERY.CONTRACT.Services.Tags;
 
 namespace QUERY.PRESENTATION.Apis;
 public class Tags : ApiEndpoint, ICarterModule
@@ -17,14 +16,14 @@ public class Tags : ApiEndpoint, ICarterModule
         var gr1 = app.NewVersionedApi("Tags").MapGroup(BaseUrl).HasApiVersion(1);
         gr1.MapGet("", GetTagsAsync)
             .WithName("GetTags")
-            .Produces<IReadOnlyList<QUERY.CONTRACT.Services.Tags.Response.TagResponse>>()
+            .Produces<IReadOnlyList<Response.TagResponse>>()
             .WithTags("Tags")
             .WithSummary("Get all tags");
     }
 
     private static async Task<IResult> GetTagsAsync(ISender sender)
     {
-        var query = new Q.GetTagsQuery();
+        var query = new Query.GetTagsQuery();
         var result = await sender.Send(query);
         return result.IsFailure ? HandlerFailure(result) : Results.Ok(result);
     }

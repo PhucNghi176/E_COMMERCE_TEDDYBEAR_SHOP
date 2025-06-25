@@ -1,7 +1,4 @@
-﻿
-
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using AUTHORIZATION.APPLICATION.Exceptions;
 using CONTRACT.CONTRACT.DOMAIN.Exceptions;
 

@@ -1,9 +1,9 @@
 ﻿using Carter;
+using COMMAND.CONTRACT.Services.Images;
 using CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace COMMAND.PRESENTATION.Apis;
@@ -18,10 +18,10 @@ public class ImageApi : ApiEndpoint, ICarterModule
     }
 
     private static async Task<IResult> UploadImageAsync(
-         IFormFile file, ISender sender)
+        IFormFile file, ISender sender)
     {
         var result = await sender.Send(
-            new CONTRACT.Services.Images.Commands.UploadImageCommand(file));
+            new Commands.UploadImageCommand(file));
         return result.IsSuccess ? Results.Ok(result) : HandlerFailure(result);
     }
 }

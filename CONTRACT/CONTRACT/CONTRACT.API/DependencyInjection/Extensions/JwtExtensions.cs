@@ -1,11 +1,11 @@
-﻿using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
+﻿using System.Text;
+using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 public static class JwtExtensions

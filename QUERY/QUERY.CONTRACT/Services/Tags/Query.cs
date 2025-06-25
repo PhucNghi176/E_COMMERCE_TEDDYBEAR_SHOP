@@ -3,5 +3,5 @@
 namespace QUERY.CONTRACT.Services.Tags;
 public static class Query
 {
-    public record GetTagsQuery() : IQuery<IReadOnlyList<Response.TagResponse>>;
+    public record GetTagsQuery : IQuery<IReadOnlyList<Response.TagResponse>>;
 }

@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
-      <ProjectReference Include="..\..\QUERY\QUERY.PERSISTENCE\QUERY.PERSISTENCE.csproj" />
-      <ProjectReference Include="..\AUTHORIZATION.CONTRACT\AUTHORIZATION.CONTRACT.csproj" />
-      <ProjectReference Include="..\AUTHORIZATION.PERSISTENCE\AUTHORIZATION.PERSISTENCE.csproj" />
+        <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
+        <ProjectReference Include="..\..\QUERY\QUERY.PERSISTENCE\QUERY.PERSISTENCE.csproj"/>
+        <ProjectReference Include="..\AUTHORIZATION.CONTRACT\AUTHORIZATION.CONTRACT.csproj"/>
+        <ProjectReference Include="..\AUTHORIZATION.PERSISTENCE\AUTHORIZATION.PERSISTENCE.csproj"/>
     </ItemGroup>
 
 </Project>

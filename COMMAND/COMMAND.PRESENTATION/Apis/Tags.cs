@@ -16,7 +16,6 @@ public class Tags : ApiEndpoint, ICarterModule
     {
         var gr1 = app.NewVersionedApi("Tags").MapGroup(BaseUrl).HasApiVersion(1);
         _ = gr1.MapPost("", CreateTagAsync);
-
     }
 
     private static async Task<IResult> CreateTagAsync(

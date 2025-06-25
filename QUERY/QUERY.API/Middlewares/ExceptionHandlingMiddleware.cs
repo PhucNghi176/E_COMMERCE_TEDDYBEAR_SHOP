@@ -1,7 +1,6 @@
-﻿using CONTRACT.CONTRACT.DOMAIN.Exceptions;
+﻿using System.Text.Json;
+using CONTRACT.CONTRACT.DOMAIN.Exceptions;
 using QUERY.APPLICATION.Exceptions;
-using System.Text.Json;
-
 
 namespace QUERY.API.Middlewares;
 internal sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger) : IMiddleware

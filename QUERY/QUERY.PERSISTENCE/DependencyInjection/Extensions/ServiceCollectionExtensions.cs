@@ -1,4 +1,3 @@
-
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QUERY.PERSISTENCE.Repositories;
-
 
 namespace QUERY.PERSISTENCE.DependencyInjection.Extensions;
 public static class ServiceCollectionExtensions
@@ -58,8 +56,6 @@ public static class ServiceCollectionExtensions
 
         _ = services.AddSingleton<IMongoDbSettings>(serviceProvider =>
             serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
-
-        _ = services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
     }
 
     public static void AddRepositoryPersistence(this IServiceCollection services)
@@ -76,6 +72,4 @@ public static class ServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
     }
-
-   
 }

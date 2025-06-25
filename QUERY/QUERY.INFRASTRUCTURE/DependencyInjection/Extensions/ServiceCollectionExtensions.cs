@@ -1,14 +1,7 @@
 using CONTRACT.CONTRACT.APPLICATION.Abstractions;
-using CONTRACT.CONTRACT.APPLICATION.DependencyInjection.Options;
-using CONTRACT.CONTRACT.CONTRACT.JsonConverters;
 using CONTRACT.CONTRACT.INFRASTRUCTURE.Caching;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Extensions;
-using CONTRACT.CONTRACT.INFRASTRUCTURE.PipeObservers;
-using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using System.Reflection;
 
 namespace QUERY.INFRASTRUCTURE.DependencyInjection.Extensions;
 public static class ServiceCollectionExtensions
@@ -27,7 +20,7 @@ public static class ServiceCollectionExtensions
             redisOptions.Configuration = connectionString;
         });
     }
-    
+
     public static void AddMediatRInfrastructure(this IServiceCollection services)
     {
         _ = services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));

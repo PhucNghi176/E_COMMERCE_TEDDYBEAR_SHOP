@@ -1,7 +1,7 @@
-﻿using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
+﻿using System.Text;
+using CONTRACT.CONTRACT.INFRASTRUCTURE.DependencyInjection.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace QUERY.API.DependencyInjection.Extensions;
 public static class JwtExtensions
@@ -56,7 +56,7 @@ public static class JwtExtensions
         });
 
         _ = services.AddAuthorizationBuilder()
-           ;
+            ;
 
 
         // services.AddScoped<CustomJwtBearerEvents>();

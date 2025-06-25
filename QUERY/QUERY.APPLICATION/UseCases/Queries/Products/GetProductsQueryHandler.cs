@@ -17,13 +17,11 @@ internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repo
         var query = repositoryBase.FindAll();
 
         if (!string.IsNullOrWhiteSpace(request.searchTerm))
-        {
             query = query.Where(p =>
                 p.Name.Contains(request.searchTerm) ||
                 p.Color.Contains(request.searchTerm) ||
                 p.ProductTags.Any(x => x.Tag.Name.Contains(request.searchTerm))
             );
-        }
 
         query = query.Include(x => x.ProductTags);
 

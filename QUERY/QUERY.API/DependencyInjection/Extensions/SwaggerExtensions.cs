@@ -6,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-
 namespace QUERY.API.DependencyInjection.Extensions;
 public static class SwaggerExtensions
 {
@@ -55,34 +54,6 @@ Example: 'Bearer 12345abcdef'",
         _ = services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     }
 
-    private class SwaggerFormDataOperationFilter : IOperationFilter
-    {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
-        {
-            var formParameters = context.MethodInfo
-                .GetParameters()
-                .Where(p => p.GetCustomAttributes(true)
-                    .Any(attr => attr.GetType() == typeof(FromFormAttribute)))
-                .ToList();
-
-            if (formParameters.Count == 0) return;
-            foreach (var param in formParameters)
-            {
-                operation.RequestBody = new OpenApiRequestBody
-                {
-                    Content =
-                    {
-                        ["multipart/form-data"] = new OpenApiMediaType
-                        {
-                            Schema = context.SchemaGenerator.GenerateSchema(param.ParameterType,
-                                context.SchemaRepository)
-                        }
-                    }
-                };
-            }
-        }
-    }
-
     public static void UseSwaggerAPI(this WebApplication app)
     {
         app.UseSwagger();
@@ -99,5 +70,31 @@ Example: 'Bearer 12345abcdef'",
 
         app.MapGet("/", () => Results.Redirect("/swagger/index.html"))
             .WithTags(string.Empty);
+    }
+
+    private class SwaggerFormDataOperationFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            var formParameters = context.MethodInfo
+                .GetParameters()
+                .Where(p => p.GetCustomAttributes(true)
+                    .Any(attr => attr.GetType() == typeof(FromFormAttribute)))
+                .ToList();
+
+            if (formParameters.Count == 0) return;
+            foreach (var param in formParameters)
+                operation.RequestBody = new OpenApiRequestBody
+                {
+                    Content =
+                    {
+                        ["multipart/form-data"] = new OpenApiMediaType
+                        {
+                            Schema = context.SchemaGenerator.GenerateSchema(param.ParameterType,
+                                context.SchemaRepository)
+                        }
+                    }
+                };
+        }
     }
 }
