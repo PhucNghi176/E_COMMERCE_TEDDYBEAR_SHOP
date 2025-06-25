@@ -17,8 +17,6 @@ jobs:
           echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
 
       - name: Build with Docker Compose
-        env:
-          COMPOSE_BAKE: true
         run: docker compose build
 
 
