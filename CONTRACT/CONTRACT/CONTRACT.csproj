@@ -10,7 +10,6 @@
         <Folder Include="CONTRACT.API\"/>
         <Folder Include="CONTRACT.APPLICATION\"/>
         <Folder Include="CONTRACT.CONTRACT\Services\"/>
-        <Folder Include="CONTRACT.DOMAIN\EntityEvents\"/>
         <Folder Include="CONTRACT.INFRASTRUCTURE\DependencyInjection\Extensions\"/>
         <Folder Include="CONTRACT.PRESENTATION\"/>
         <Folder Include="CONTRACT.PERSISTENCE\"/>

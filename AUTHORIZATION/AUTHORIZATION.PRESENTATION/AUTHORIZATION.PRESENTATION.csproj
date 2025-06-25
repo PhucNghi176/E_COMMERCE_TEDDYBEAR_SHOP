@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
+        <ProjectReference Include="..\AUTHORIZATION.CONTRACT\AUTHORIZATION.CONTRACT.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Carter" Version="8.2.1"/>
