@@ -1,4 +1,4 @@
-name: my-workflow
+name: my-workflowMore actions
 
 on:
   push:
@@ -6,34 +6,48 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: [ self-hosted ]
     steps:
       - uses: actions/checkout@v3
-
-      - name: Write appsettings
+      - name: Write appsetting
+        env:
+          APPSETTING: ${{ secrets.APPSETTING }}
         run: |
-          mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API
-          cat <<EOF > QUERY/QUERY.API/appsettings.json
-          ${{ secrets.APPSETTING }}
-          EOF
+          echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
 
-          cat <<EOF > COMMAND/COMMAND.API/appsettings.json
-          ${{ secrets.APPSETTING }}
-          EOF
+      - name: Build with Docker Compose
+        env:
+          COMPOSE_BAKE: true
+        run: docker compose build
 
-      - name: Pull latest code
+
+  deploy:
+    runs-on: [ self-hosted ]
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare Configuration
+        env:
+          APPSETTING: ${{ secrets.APPSETTING }}
         run: |
-             sudo mkdir -p /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-              cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-               sudo git pull origin main
+          echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
 
-
-
-      - name: Docker Compose Build & Deploy
-        run: |
-          cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-          docker compose down
-          docker compose build --no-cache
-          docker compose up -d
-          docker system prune -f
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}More actions
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+            git pull origin main
+            echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
+            echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+            docker system prune -f
