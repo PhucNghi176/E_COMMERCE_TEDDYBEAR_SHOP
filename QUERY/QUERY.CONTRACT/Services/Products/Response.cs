@@ -8,7 +8,7 @@ public static class Response
         decimal Price,
         string size,
         TagResponse[] Tags,
-        string[] ImgUrl,
+        string PrimaryImageUrl,
         string[] Color,
         DateTimeOffset CreatedOnUtc);
 

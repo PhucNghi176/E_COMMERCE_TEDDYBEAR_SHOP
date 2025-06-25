@@ -41,7 +41,7 @@ internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repo
             product.ProductTags.Select(tag => new Response.TagResponse(
                 tag.Tag.Id,
                 tag.Tag.Name)).ToArray(),
-            product.ImgUrl.ToArray(),
+            product.PrimaryImgUrl,
             product.Color.ToArray(),
             product.CreatedOnUtc)).ToList();
 
