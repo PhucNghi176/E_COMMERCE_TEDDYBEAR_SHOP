@@ -23,7 +23,7 @@ COPY COMMAND/COMMAND.CONTRACT/*.csproj COMMAND/COMMAND.CONTRACT/
 COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
 
 # Restore packages with retry logic and timeout settings
-RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj
+RUN dotnet restore COMMAND/COMMAND/COMMAND.API.csproj
 
 # Copy all source code
 COPY . ./
