@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
 
 WORKDIR /src
 
@@ -27,7 +27,7 @@ WORKDIR /src/QUERY/QUERY.API
 RUN dotnet publish -c Release -o /app/out
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 WORKDIR /app
 COPY --from=build-env /app/out .
 

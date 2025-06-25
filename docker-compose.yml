@@ -2,7 +2,7 @@ services:
   command-api:
    build:
      context: .
-     dockerfile: Dockerfile.command
+     dockerfile: command.Dockerfile
    container_name: command-api
    ports:
      - "1706:8080"
@@ -16,7 +16,7 @@ services:
   query-api:
     build:
       context: .
-      dockerfile: Dockerfile.query
+      dockerfile: query.Dockerfile
     container_name: query-api
     ports:
       - "1906:8080"

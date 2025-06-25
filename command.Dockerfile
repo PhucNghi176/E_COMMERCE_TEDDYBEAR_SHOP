@@ -7,10 +7,6 @@ ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 ENV NUGET_PACKAGES=/root/.nuget/packages
 
 WORKDIR /src
-
-# Copy nuget.config if you have one (recommended to create)
-# COPY nuget.config ./
-
 # Copy solution file
 COPY *.sln ./
 
@@ -27,17 +23,7 @@ COPY COMMAND/COMMAND.CONTRACT/*.csproj COMMAND/COMMAND.CONTRACT/
 COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
 
 # Restore packages with retry logic and timeout settings
-RUN for i in 1 2 3; do \
-    dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj \
-        --disable-parallel \
-        --no-cache \
-        --force \
-        --verbosity normal && break || \
-    (echo "Restore attempt $i failed, retrying in 10 seconds..." && sleep 10); \
-    done && \
-    if [ $? -ne 0 ]; then \
-        echo "All restore attempts failed" && exit 1; \
-    fi
+RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj
 
 # Copy all source code
 COPY . ./
