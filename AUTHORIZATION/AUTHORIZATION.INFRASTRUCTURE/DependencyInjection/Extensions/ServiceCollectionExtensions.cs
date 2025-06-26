@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
     {
        services
             .AddTransient<IJwtTokenService, JwtTokenService>()
-            .AddTransient<ICacheService, CacheService>()
+           // .AddTransient<ICacheService, CacheService>()
             .AddSingleton<IMediaService, CloudinaryService>()
             .AddSingleton<IMailService, MailService>()
             .AddSingleton<Cloudinary>(provider =>
