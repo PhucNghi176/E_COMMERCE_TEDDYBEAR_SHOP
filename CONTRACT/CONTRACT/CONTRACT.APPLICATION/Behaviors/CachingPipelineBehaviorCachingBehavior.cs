@@ -16,26 +16,7 @@ public class CachingPipelineBehaviorCachingBehavior<TRequest, TResponse>(
     {
         TResponse response;
         // By Pass Cache
-        if (request.BypassCache) return await next();
-
-        async Task<TResponse> GetResponseAndAddToCache()
-        {
-            response = await next();
-            if (response != null)
-            {
-                var slidingExpiration =
-                    request.SlidingExpirationInMinutes == 0 ? 30 : request.SlidingExpirationInMinutes;
-                var absoluteExpiration =
-                    request.AbsoluteExpirationInMinutes == 0 ? 60 : request.AbsoluteExpirationInMinutes;
-                var options = new DistributedCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(slidingExpiration))
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(absoluteExpiration));
-
-                await cacheService.SetAsync(request.CacheKey, response, options, cancellationToken);
-            }
-
-            return response;
-        }
+        if (request.BypassCache) return await next(cancellationToken);
 
         var cachedResponse = await cacheService.GetAsync<TResponse>(request.CacheKey, cancellationToken);
 
@@ -49,5 +30,21 @@ public class CachingPipelineBehaviorCachingBehavior<TRequest, TResponse>(
             response = await GetResponseAndAddToCache();
         // logger.LogInformation("added to cache with key : {CacheKey}", request.CacheKey);
         return response;
+
+        async Task<TResponse> GetResponseAndAddToCache()
+        {
+            response = await next(cancellationToken);
+            var slidingExpiration =
+                request.SlidingExpirationInMinutes == 0 ? 30 : request.SlidingExpirationInMinutes;
+            var absoluteExpiration =
+                request.AbsoluteExpirationInMinutes == 0 ? 60 : request.AbsoluteExpirationInMinutes;
+            var options = new DistributedCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(slidingExpiration))
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(absoluteExpiration));
+
+            await cacheService.SetAsync(request.CacheKey, response, options, cancellationToken);
+
+            return response;
+        }
     }
 }
