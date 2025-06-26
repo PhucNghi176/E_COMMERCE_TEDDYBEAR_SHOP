@@ -8,12 +8,14 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.17"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4"/>
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0"/>
         <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="6.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\COMMAND\COMMAND.INFRASTRUCTURE\COMMAND.INFRASTRUCTURE.csproj" />
         <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
         <ProjectReference Include="..\..\E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults\ServiceDefaults.csproj"/>
         <ProjectReference Include="..\AUTHORIZATION.APPLICATION\AUTHORIZATION.APPLICATION.csproj"/>
