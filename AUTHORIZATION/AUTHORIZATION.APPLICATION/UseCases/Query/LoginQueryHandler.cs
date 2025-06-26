@@ -28,8 +28,8 @@ internal sealed class LoginQueryHandler(IRepositoryBase<User, int> userRepositor
 
         var claims = new List<Claim>(2)
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email)
+            new("name", user.UserName),
+            new("email", user.Email)
         };
         var token = jwtTokenService.GenerateAccessToken(claims);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
