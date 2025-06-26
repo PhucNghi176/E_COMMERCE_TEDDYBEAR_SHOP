@@ -2,8 +2,8 @@ using AUTHORIZATION.API.DependencyInjection.Extensions;
 using AUTHORIZATION.API.Middlewares;
 using AUTHORIZATION.APPLICATION.DependencyInjection.Extensions;
 using AUTHORIZATION.INFRASTRUCTURE.DependencyInjection.Extensions;
-using AUTHORIZATION.PERSISTENCE.DependencyInjection.Extensions;
 using Carter;
+using COMMAND.PERSISTENCE.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
@@ -65,16 +65,12 @@ builder.Services.AddMediatRApplication();
 
 // Persistence Layer
 builder.Services.AddInterceptorPersistence();
-builder.Services.ConfigureSqlServerRetryOptionsPersistence(
-    builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+builder.Services.ConfigureSqlServerRetryOptionsPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddSqlServerPersistence();
 builder.Services.AddRepositoryPersistence();
 
 // Infrastructure Layer
 builder.Services.AddServicesInfrastructure();
-builder.Services.AddRedisInfrastructure(builder.Configuration);
-//builder.Services.AddMasstransitRabbitMQInfrastructure(builder.Configuration);
-//builder.Services.AddQuartzInfrastructure();
 builder.Services.AddMediatRInfrastructure();
 //builder.Services.ConfigureMailOptionsInfrastructure(builder.Configuration.GetSection(nameof(MailOption)));
 

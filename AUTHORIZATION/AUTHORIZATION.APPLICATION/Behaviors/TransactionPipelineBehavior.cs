@@ -1,4 +1,5 @@
 using AUTHORIZATION.PERSISTENCE;
+using COMMAND.PERSISTENCE;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

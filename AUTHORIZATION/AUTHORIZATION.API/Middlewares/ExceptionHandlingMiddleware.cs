@@ -43,6 +43,8 @@ internal sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddl
         return exception switch
         {
             TagException.TagNotFoundException _ => StatusCodes.Status404NotFound,
+            NotFoundException _ => StatusCodes.Status404NotFound,
+            UserException.PasswordMismatch _ => StatusCodes.Status401Unauthorized,
             AlreadyExistedException _ => StatusCodes.Status409Conflict,
             ImageUploadFailException _ => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
