@@ -9,3 +9,9 @@ README.md
 Dockerfile*
 docker-compose*
 .dockerignore
+# Exclude all migrations
+COMMAND/COMMAND.PERSISTENCE/Migrations/*
+# Exclude all test projects
+COMMAND/COMMAND.TESTS/*
+# Exclude all log files
+*.txt
