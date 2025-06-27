@@ -11,5 +11,7 @@
         <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
         <ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj"/>
     </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis"/>
+	</ItemGroup>
 </Project>

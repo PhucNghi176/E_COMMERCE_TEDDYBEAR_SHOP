@@ -1,37 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Carter" Version="8.2.1"/>
-        <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="6.1.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.7.0"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0"/>
+	<ItemGroup>
+		<PackageReference Include="Carter" />
+		<PackageReference Include="MicroElements.Swashbuckle.FluentValidation" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
+		<PackageReference Include="Serilog" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Sinks.Console" />
+		<PackageReference Include="Serilog.Sinks.File" />
+	</ItemGroup>
 
-
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
-        <ProjectReference Include="..\COMMAND.APPLICATION\COMMAND.APPLICATION.csproj"/>
-        <ProjectReference Include="..\COMMAND.CONTRACT\COMMAND.CONTRACT.csproj"/>
-        <ProjectReference Include="..\COMMAND.INFRASTRUCTURE\COMMAND.INFRASTRUCTURE.csproj"/>
-        <ProjectReference Include="..\COMMAND.PRESENTATION\COMMAND.PRESENTATION.csproj"/>
-        <ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj"/>
-        <ProjectReference Include="..\..\E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults\ServiceDefaults.csproj"/>
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj" />
+		<ProjectReference Include="..\..\E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults\ServiceDefaults.csproj" />
+		<ProjectReference Include="..\COMMAND.APPLICATION\COMMAND.APPLICATION.csproj" />
+		<ProjectReference Include="..\COMMAND.CONTRACT\COMMAND.CONTRACT.csproj" />
+		<ProjectReference Include="..\COMMAND.INFRASTRUCTURE\COMMAND.INFRASTRUCTURE.csproj" />
+		<ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj" />
+		<ProjectReference Include="..\COMMAND.PRESENTATION\COMMAND.PRESENTATION.csproj" />
+	</ItemGroup>
 
 </Project>
