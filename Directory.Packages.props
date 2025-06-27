@@ -1,0 +1,80 @@
+﻿<Project>
+  
+  <!-- Central Package Management - All package versions are defined here -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ASP.NET Core and Web packages -->
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.17" />
+    
+    <!-- Entity Framework Core packages -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.17" />
+    
+    <!-- Swagger/OpenAPI packages -->
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="8.1.4" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Newtonsoft" Version="8.1.4" />
+    
+    <!-- API Versioning -->
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+    
+    <!-- Validation and MediatR -->
+    <PackageVersion Include="FluentValidation" Version="11.11.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageVersion Include="MicroElements.Swashbuckle.FluentValidation" Version="6.1.0" />
+    <PackageVersion Include="MediatR" Version="12.5.0" />
+    
+    <!-- Carter (Minimal APIs) -->
+    <PackageVersion Include="Carter" Version="8.2.1" />
+    
+    <!-- Security and Authentication -->
+    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.12.0" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.12.0" />
+    <PackageVersion Include="BCrypt" Version="1.0.0" />
+    
+    <!-- Caching and Redis -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.6" />
+    
+    <!-- Dependency Injection -->
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+    
+    <!-- Logging -->
+    <PackageVersion Include="Serilog" Version="4.3.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    
+    <!-- Utilities -->
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
+    <PackageVersion Include="CloudinaryDotNet" Version="1.27.5" />
+    <PackageVersion Include="MailKit" Version="4.12.1" />
+    
+    <!-- Code Analysis (excluding analyzers that are added automatically) -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0" />
+    
+    <!-- Testing packages -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    
+    <!-- .NET Aspire packages -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.3.1" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,44 @@
+﻿<Project>
+  
+  <!-- Global Properties for all projects -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    
+    <!-- Central Package Management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    
+    <!-- Assembly and Package Information -->
+    <Company>E-Commerce TeddyBear Shop</Company>
+    <Product>E-Commerce TeddyBear Shop</Product>
+    <Copyright>Copyright © 2024 E-Commerce TeddyBear Shop</Copyright>
+    
+    <!-- Build Configuration -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    
+    <!-- Output Configuration -->
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    
+    <!-- Package Restore -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+  </PropertyGroup>
+
+  <!-- Conditional Properties based on project type -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj' AND '$(IsTestProject)' == 'true'">
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Web Project specific properties -->
+  <PropertyGroup Condition="'$(UseWebSdk)' == 'true' OR '$(MSBuildProjectName)' == 'Microsoft.NET.Sdk.Web'">
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+</Project>

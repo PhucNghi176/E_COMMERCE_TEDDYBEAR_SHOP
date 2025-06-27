@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net8.0": {
+      "command.contract": {
+        "type": "Project",
+        "dependencies": {
+          "CONTRACT": "[1.0.0, )"
+        }
+      },
+      "command.persistence": {
+        "type": "Project",
+        "dependencies": {
+          "COMMAND.CONTRACT": "[1.0.0, )",
+          "CONTRACT": "[1.0.0, )",
+          "Microsoft.CodeAnalysis.CSharp": "(, )",
+          "Microsoft.CodeAnalysis.Common": "(, )",
+          "Microsoft.EntityFrameworkCore.Proxies": "(, )",
+          "Microsoft.EntityFrameworkCore.SqlServer": "(, )"
+        }
+      },
+      "contract": {
+        "type": "Project",
+        "dependencies": {
+          "Ardalis.SmartEnum": "(, )",
+          "Asp.Versioning.Mvc.ApiExplorer": "(, )",
+          "Carter": "(, )",
+          "CloudinaryDotNet": "(, )",
+          "FluentValidation": "(, )",
+          "FluentValidation.DependencyInjectionExtensions": "(, )",
+          "MailKit": "(, )",
+          "MediatR": "(, )",
+          "Microsoft.AspNetCore.Authentication.Google": "(, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "(, )",
+          "Microsoft.AspNetCore.OpenApi": "(, )",
+          "Microsoft.EntityFrameworkCore": "(, )",
+          "Microsoft.Extensions.Caching.StackExchangeRedis": "(, )",
+          "Microsoft.Extensions.DependencyInjection": "(, )",
+          "Microsoft.IdentityModel.Tokens": "(, )",
+          "Newtonsoft.Json": "(, )",
+          "Serilog": "(, )",
+          "Serilog.AspNetCore": "(, )",
+          "Swashbuckle.AspNetCore": "(, )",
+          "Swashbuckle.AspNetCore.Newtonsoft": "(, )",
+          "Swashbuckle.AspNetCore.SwaggerGen": "(, )",
+          "System.IdentityModel.Tokens.Jwt": "(, )"
+        }
+      }
+    }
+  }
+}
