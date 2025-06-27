@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -7,12 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="6.1.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4"/>
+        <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+		<PackageReference Include="Serilog" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Sinks.Console" />
+		<PackageReference Include="Serilog.Sinks.File" />
     </ItemGroup>
 
     <ItemGroup>
@@ -24,5 +30,4 @@
         <ProjectReference Include="..\QUERY.PERSISTENCE\QUERY.PERSISTENCE.csproj"/>
         <ProjectReference Include="..\QUERY.PRESENTATION\QUERY.PRESENTATION.csproj"/>
     </ItemGroup>
-
 </Project>
