@@ -1,8 +1,8 @@
-using AUTHORIZATION.API.DependencyInjection.Extensions;
 using AUTHORIZATION.API.Middlewares;
-using AUTHORIZATION.APPLICATION.DependencyInjection.Extensions;
 using AUTHORIZATION.INFRASTRUCTURE.DependencyInjection.Extensions;
 using Carter;
+using COMMAND.API.DependencyInjection.Extensions;
+using COMMAND.APPLICATION.DependencyInjection.Extensions;
 using COMMAND.PERSISTENCE.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;

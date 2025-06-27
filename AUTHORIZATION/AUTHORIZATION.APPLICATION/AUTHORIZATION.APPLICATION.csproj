@@ -7,14 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\COMMAND\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj" />
         <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
-        <ProjectReference Include="..\..\QUERY\QUERY.PERSISTENCE\QUERY.PERSISTENCE.csproj"/>
         <ProjectReference Include="..\AUTHORIZATION.CONTRACT\AUTHORIZATION.CONTRACT.csproj"/>
-        <ProjectReference Include="..\AUTHORIZATION.PERSISTENCE\AUTHORIZATION.PERSISTENCE.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="BCrypt" Version="1.0.0" />
+      <Folder Include="DependencyInjection\Extensions\" />
+      <Folder Include="Exceptions\" />
     </ItemGroup>
 
 </Project>

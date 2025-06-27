@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using AUTHORIZATION.APPLICATION.Exceptions;
+using COMMAND.APPLICATION.Exceptions;
 using CONTRACT.CONTRACT.DOMAIN.Exceptions;
 
 namespace AUTHORIZATION.API.Middlewares;

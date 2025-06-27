@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace AUTHORIZATION.API.DependencyInjection.Extensions;
 public static class JwtExtensions
 {
-    public static void AddJwtAuthenticationAPI1(this IServiceCollection services, IConfiguration configuration)
+    public static void AddJwtAuthenticationAPI(this IServiceCollection services, IConfiguration configuration)
     {
         _ = services.AddAuthentication(options =>
         {
