@@ -16,5 +16,8 @@
       <Folder Include="DependencyInjection\Extensions\" />
       <Folder Include="Exceptions\" />
     </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.Common"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+	</ItemGroup>
 </Project>

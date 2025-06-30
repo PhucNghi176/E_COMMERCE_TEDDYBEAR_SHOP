@@ -12,5 +12,8 @@
         <ProjectReference Include="..\COMMAND.CONTRACT\COMMAND.CONTRACT.csproj"/>
         <ProjectReference Include="..\COMMAND.PERSISTENCE\COMMAND.PERSISTENCE.csproj"/>
     </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.Common"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+	</ItemGroup>
 </Project>

@@ -10,9 +10,10 @@
         <ProjectReference Include="..\..\CONTRACT\CONTRACT\CONTRACT.csproj"/>
         <ProjectReference Include="..\AUTHORIZATION.CONTRACT\AUTHORIZATION.CONTRACT.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-        <PackageReference Include="Carter" />
-    </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Carter" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+	</ItemGroup>
 </Project>
