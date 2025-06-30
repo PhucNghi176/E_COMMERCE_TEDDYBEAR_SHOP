@@ -30,7 +30,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
     .ReadFrom.Services(services)
     .Enrich.FromLogContext()
-    .WriteTo.File("Logs/logs.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("logs/logs.txt", rollingInterval: RollingInterval.Day)
     .WriteTo.Console());
 
 // Add Carter module with assembly scanning for presentation layer
