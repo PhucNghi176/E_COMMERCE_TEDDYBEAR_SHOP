@@ -1,39 +1,79 @@
+# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
 
+# Set build arguments and environment variables
+ARG BUILD_CONFIGURATION=Release
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    DOTNET_NOLOGO=true
 
 WORKDIR /src
 
-# Copy COMMAND project files
+# Copy project files for better cache usage
 COPY COMMAND/COMMAND.API/*.csproj COMMAND/COMMAND.API/
 COPY COMMAND/COMMAND.APPLICATION/*.csproj COMMAND/COMMAND.APPLICATION/
-COPY COMMAND/COMMAND.APPLICATION.TEST/*.csproj COMMAND/COMMAND.APPLICATION.TEST/
 COPY COMMAND/COMMAND.INFRASTRUCTURE/*.csproj COMMAND/COMMAND.INFRASTRUCTURE/
 COPY COMMAND/COMMAND.PERSISTENCE/*.csproj COMMAND/COMMAND.PERSISTENCE/
 COPY COMMAND/COMMAND.PRESENTATION/*.csproj COMMAND/COMMAND.PRESENTATION/
 COPY COMMAND/COMMAND.CONTRACT/*.csproj COMMAND/COMMAND.CONTRACT/
-
-# Copy the shared CONTRACT project (now accessible)
 COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
+COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/*.csproj E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
 
-RUN dotnet nuget locals all --clear
-# Restore packages with retry logic and timeout settings
-RUN dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj --verbosity normal --force
+# Skip test projects to reduce build time
+# COPY COMMAND/COMMAND.APPLICATION.TEST/*.csproj COMMAND/COMMAND.APPLICATION.TEST/
 
-# Copy all source code
-COPY . ./
+# Restore dependencies
+RUN dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj --verbosity minimal -r linux-musl-x64
 
-# Build and publish the COMMAND API
+# Copy only necessary source files (exclude tests, obj, bin folders)
+COPY COMMAND/COMMAND.API/ COMMAND/COMMAND.API/
+COPY COMMAND/COMMAND.APPLICATION/ COMMAND/COMMAND.APPLICATION/
+COPY COMMAND/COMMAND.INFRASTRUCTURE/ COMMAND/COMMAND.INFRASTRUCTURE/
+COPY COMMAND/COMMAND.PERSISTENCE/ COMMAND/COMMAND.PERSISTENCE/
+COPY COMMAND/COMMAND.PRESENTATION/ COMMAND/COMMAND.PRESENTATION/
+COPY COMMAND/COMMAND.CONTRACT/ COMMAND/COMMAND.CONTRACT/
+COPY CONTRACT/CONTRACT/ CONTRACT/CONTRACT/
+COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/ E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
+
+# Build and publish with optimizations for size - removing incompatible options
 WORKDIR /src/COMMAND/COMMAND.API
-RUN dotnet publish -c Release -o /app/out
+RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
+    -r linux-musl-x64 \
+    --self-contained false \
+    /p:DebugType=None \
+    /p:DebugSymbols=false
 
-# Runtime stage with globalization support
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
-
-# ✅ Add ICU globalization support
-RUN apk add --no-cache icu-libs
-
-# ✅ Enable ICU-based globalization support
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+# Create a smaller intermediate image by removing unnecessary files
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine AS cleaner
 WORKDIR /app
 COPY --from=build-env /app/out .
+
+# Remove unnecessary files to reduce image size
+RUN find . -name "*.pdb" -type f -delete && \
+    find . -name "*.xml" -type f -delete && \
+    find . -name "*.dev.json" -type f -delete
+
+# Use smaller runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine-minimal AS runtime
+
+# Add only required packages and clean cache in same layer
+RUN apk add --no-cache icu-libs curl && \
+    rm -rf /var/cache/apk/*
+
+# Set globalization invariant
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    ASPNETCORE_URLS=http://+:8080 \
+    # Disable creation of .NET telemetry files
+    COMPlus_EnableDiagnostics=0
+
+# Create non-root user for security
+RUN addgroup -g 1000 dotnet && adduser -u 1000 -G dotnet -h /app -s /bin/sh -D dotnet
+USER dotnet
+WORKDIR /app
+
+# Copy only the published output from the cleaner stage
+COPY --from=cleaner --chown=dotnet:dotnet /app .
+
+# Configure container startup
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "COMMAND.API.dll"]

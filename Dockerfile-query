@@ -1,40 +1,77 @@
+# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
+
+# Set build arguments and environment variables
+ARG BUILD_CONFIGURATION=Release
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    DOTNET_NOLOGO=true
 
 WORKDIR /src
 
-# Copy solution file
+# Copy solution and project files for better cache usage
 COPY *.sln ./
-
-# Copy QUERY project files
 COPY QUERY/QUERY.API/*.csproj QUERY/QUERY.API/
 COPY QUERY/QUERY.APPLICATION/*.csproj QUERY/QUERY.APPLICATION/
 COPY QUERY/QUERY.INFRASTRUCTURE/*.csproj QUERY/QUERY.INFRASTRUCTURE/
 COPY QUERY/QUERY.PERSISTENCE/*.csproj QUERY/QUERY.PERSISTENCE/
 COPY QUERY/QUERY.PRESENTATION/*.csproj QUERY/QUERY.PRESENTATION/
 COPY QUERY/QUERY.CONTRACT/*.csproj QUERY/QUERY.CONTRACT/
-
-# Copy the shared CONTRACT project (now accessible)
 COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
+COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/*.csproj E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
 
-# Restore packages
-RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj
+# Restore dependencies
+RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj -r linux-musl-x64
 
-# Copy all source code
-COPY . ./
+# Copy only necessary source files (exclude tests, obj, bin folders)
+COPY QUERY/QUERY.API/ QUERY/QUERY.API/
+COPY QUERY/QUERY.APPLICATION/ QUERY/QUERY.APPLICATION/
+COPY QUERY/QUERY.INFRASTRUCTURE/ QUERY/QUERY.INFRASTRUCTURE/
+COPY QUERY/QUERY.PERSISTENCE/ QUERY/QUERY.PERSISTENCE/
+COPY QUERY/QUERY.PRESENTATION/ QUERY/QUERY.PRESENTATION/
+COPY QUERY/QUERY.CONTRACT/ QUERY/QUERY.CONTRACT/
+COPY CONTRACT/CONTRACT/ CONTRACT/CONTRACT/
+COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/ E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
 
-# Build and publish the QUERY API
+# Build and publish with optimizations for size - removing incompatible options
 WORKDIR /src/QUERY/QUERY.API
-RUN dotnet publish -c Release -o /app/out
+RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
+    -r linux-musl-x64 \
+    --self-contained false \
+    /p:DebugType=None \
+    /p:DebugSymbols=false
 
-# Runtime stage with globalization support
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
-
-# ✅ Add ICU globalization support
-RUN apk add --no-cache icu-libs
-
-# ✅ Enable ICU-based globalization support
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+# Create a smaller intermediate image by removing unnecessary files
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine AS cleaner
 WORKDIR /app
 COPY --from=build-env /app/out .
 
+# Remove unnecessary files to reduce image size
+RUN find . -name "*.pdb" -type f -delete && \
+    find . -name "*.xml" -type f -delete && \
+    find . -name "*.dev.json" -type f -delete
+
+# Use smaller runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine-minimal AS runtime
+
+# Add only required packages and clean cache in same layer
+RUN apk add --no-cache icu-libs curl && \
+    rm -rf /var/cache/apk/*
+
+# Set globalization invariant
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    ASPNETCORE_URLS=http://+:8080 \
+    # Disable creation of .NET telemetry files
+    COMPlus_EnableDiagnostics=0
+
+# Create non-root user for security
+RUN addgroup -g 1000 dotnet && adduser -u 1000 -G dotnet -h /app -s /bin/sh -D dotnet
+USER dotnet
+WORKDIR /app
+
+# Copy only the published output from the cleaner stage
+COPY --from=cleaner --chown=dotnet:dotnet /app .
+
+# Configure container startup
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "QUERY.API.dll"]
