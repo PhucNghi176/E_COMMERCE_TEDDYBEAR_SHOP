@@ -20,7 +20,7 @@ internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repo
             query = query.Where(p =>
                 p.Name.Contains(request.searchTerm) ||
                 p.Color.Contains(request.searchTerm) ||
-                p.ProductTags.Any(x => x.Tag.Name.Contains(request.searchTerm))
+                p.ProductTags.Any(x => x.Tag.Name.Contains(request.searchTerm)&&!p.IsDeleted)
             );
 
         query = query.Include(x => x.ProductTags);
