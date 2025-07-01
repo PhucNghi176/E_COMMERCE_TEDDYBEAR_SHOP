@@ -14,7 +14,7 @@ public class ImageApi : ApiEndpoint, ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var gr1 = app.NewVersionedApi("Images").MapGroup(BaseUrl).HasApiVersion(1);
-        gr1.MapPost("", UploadImageAsync).DisableAntiforgery().RequireAuthorization();
+        gr1.MapPost("upload", UploadImageAsync).DisableAntiforgery().RequireAuthorization();
     }
 
     private static async Task<IResult> UploadImageAsync(
