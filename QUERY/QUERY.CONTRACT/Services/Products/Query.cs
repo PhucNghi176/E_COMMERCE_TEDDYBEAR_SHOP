@@ -8,6 +8,7 @@ public static class Query
         string? searchTerm = null,
         string? SortColumn = null,
         string? sortOrder = null,
+        string? Tag = null,
         int pageIndex = 1,
         int pageSize = 10) : IQuery<PagedResult<Response.ProductResponse>>;
 }

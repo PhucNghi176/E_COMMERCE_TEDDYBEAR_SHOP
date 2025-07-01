@@ -7,4 +7,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public virtual DbSet<Tag> Tags { get; set; }
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductTag> ProductTags { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        modelBuilder.Entity<Product>().HasQueryFilter(x => !x.IsDeleted);
+    }
 }

@@ -16,10 +16,19 @@ public class ProductApi : ApiEndpoint, ICarterModule
     {
         var gr1 = app.NewVersionedApi("Products").MapGroup(BaseUrl).HasApiVersion(1);
         gr1.MapPost("", CreateProduct);
+        gr1.MapDelete("", DeleteProduct);
     }
 
     private static async Task<IResult> CreateProduct(
         [FromBody] Commands.CreateProductCommand command,
+        ISender sender)
+    {
+        var result = await sender.Send(command);
+        return result.IsFailure ? HandlerFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> DeleteProduct(
+        [FromBody] Commands.DeleteProductCommand command,
         ISender sender)
     {
         var result = await sender.Send(command);

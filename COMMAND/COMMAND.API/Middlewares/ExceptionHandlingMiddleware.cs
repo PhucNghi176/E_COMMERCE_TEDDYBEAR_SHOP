@@ -45,6 +45,7 @@ internal sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddl
             TagException.TagNotFoundException _ => StatusCodes.Status404NotFound,
             AlreadyExistedException _ => StatusCodes.Status409Conflict,
             ImageUploadFailException _ => StatusCodes.Status400BadRequest,
+            NotFoundException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
     }

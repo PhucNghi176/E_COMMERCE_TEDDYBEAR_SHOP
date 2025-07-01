@@ -28,12 +28,13 @@ public class ProductApi : ApiEndpoint, ICarterModule
         string searchTerm = null,
         string sortColumn = null,
         string sortOrder = null,
+        string tag = null,
         int pageIndex = 1,
         int pageSize = 10
     )
     {
         var result = await sender.Send(new Query.GetProducts(searchTerm, sortColumn,
-            SortOrderExtension.ConvertStringToSortOrder(sortOrder), pageIndex, pageSize));
+            SortOrderExtension.ConvertStringToSortOrder(sortOrder), tag, pageIndex, pageSize));
         return result.IsFailure ? HandlerFailure(result) : Results.Ok(result);
     }
 }

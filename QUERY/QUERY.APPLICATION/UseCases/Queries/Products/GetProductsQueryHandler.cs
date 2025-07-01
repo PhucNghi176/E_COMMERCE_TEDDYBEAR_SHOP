@@ -20,8 +20,16 @@ internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repo
             query = query.Where(p =>
                 p.Name.Contains(request.searchTerm) ||
                 p.Color.Contains(request.searchTerm) ||
-                p.ProductTags.Any(x => x.Tag.Name.Contains(request.searchTerm)&&!p.IsDeleted)
+                p.ProductTags.Any(x => x.Tag.Name.Contains(request.searchTerm))
             );
+        if (request.Tag is not null)
+        {
+            var listTags = request.Tag.Split("&&").Select(tag => tag.Trim()).ToList();
+            //Contains all tags in the list
+            //This will filter products that have at least one of the tags in the list
+
+            query = query.Where(p => p.ProductTags.All(pt => listTags.Contains(pt.Tag.Name)));
+        }
 
         query = query.Include(x => x.ProductTags);
 

@@ -13,4 +13,6 @@ public static class Commands
         int Quantity = 1,
         decimal Price = 0.1m
     ) : ICommand;
+
+    public record DeleteProductCommand(int Id) : ICommand;
 }
