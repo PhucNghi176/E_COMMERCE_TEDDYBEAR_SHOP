@@ -1,14 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
 
-# Set environment variables to handle timeouts and improve performance
-ENV DOTNET_CLI_TIMEOUT=300000
-ENV NUGET_XMLDOC_MODE=skip
-ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-ENV NUGET_PACKAGES=/root/.nuget/packages
 
 WORKDIR /src
-# Copy solution file
-COPY *.sln ./
 
 # Copy COMMAND project files
 COPY COMMAND/COMMAND.API/*.csproj COMMAND/COMMAND.API/
@@ -22,18 +15,25 @@ COPY COMMAND/COMMAND.CONTRACT/*.csproj COMMAND/COMMAND.CONTRACT/
 # Copy the shared CONTRACT project (now accessible)
 COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
 
+RUN dotnet nuget locals all --clear
 # Restore packages with retry logic and timeout settings
-RUN dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj
+RUN dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj --verbosity normal --force
 
 # Copy all source code
 COPY . ./
 
 # Build and publish the COMMAND API
 WORKDIR /src/COMMAND/COMMAND.API
-RUN dotnet publish -c Release -o /app/out --no-restore
+RUN dotnet publish -c Release -o /app/out
 
-# Runtime stage
+# Runtime stage with globalization support
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+
+# ✅ Add ICU globalization support
+RUN apk add --no-cache icu-libs
+
+# ✅ Enable ICU-based globalization support
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "COMMAND.API.dll"]

@@ -1,22 +1,22 @@
 services:
   command-api:
-   build:
-     context: .
-     dockerfile: command.Dockerfile
-   container_name: command-api
-   ports:
-     - "1706:8080"
-   extra_hosts:
-     - "host.docker.internal:host-gateway"
-   networks:
-     - app-network
-   volumes:
-     - ./COMMAND/COMMAND.API/appsettings.json:/app/appsettings.json:ro
+    build:
+      context: .
+      dockerfile: Dockerfile-command
+    container_name: command-api
+    ports:
+      - "1706:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app-network
+    volumes:
+      - ./COMMAND/COMMAND.API/appsettings.json:/app/appsettings.json:ro
 
   query-api:
     build:
       context: .
-      dockerfile: query.Dockerfile
+      dockerfile: Dockerfile-query
     container_name: query-api
     ports:
       - "1906:8080"
@@ -26,6 +26,20 @@ services:
       - app-network
     volumes:
       - ./QUERY/QUERY.API/appsettings.json:/app/appsettings.json:ro
+  
+  authorize-api:
+    build:
+      context: .
+      dockerfile: Dockerfile-authorize
+    container_name: authorize-api
+    ports:
+      - "1917:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app-network
+    volumes:
+      - ./AUTHORIZATION/AUTHORIZATION.API/appsettings.json:/app/appsettings.json:ro
 
 networks:
   app-network:

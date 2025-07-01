@@ -26,8 +26,14 @@ COPY . ./
 WORKDIR /src/QUERY/QUERY.API
 RUN dotnet publish -c Release -o /app/out
 
-# Runtime stage
+# Runtime stage with globalization support
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+
+# ✅ Add ICU globalization support
+RUN apk add --no-cache icu-libs
+
+# ✅ Enable ICU-based globalization support
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 COPY --from=build-env /app/out .
 
