@@ -29,8 +29,6 @@
       - app-network
     volumes:
       - ./COMMAND/COMMAND.API/appsettings.json:/app/appsettings.json:ro
-      # Optional: Add volume for persistent logs
-      - command-logs:/app/logs
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
       interval: 30s
@@ -83,7 +81,6 @@
       - app-network
     volumes:
       - ./QUERY/QUERY.API/appsettings.json:/app/appsettings.json:ro
-      - query-logs:/app/logs
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
       interval: 30s
@@ -138,7 +135,6 @@
       - app-network
     volumes:
       - ./AUTHORIZATION/AUTHORIZATION.API/appsettings.json:/app/appsettings.json:ro
-      - auth-logs:/app/logs
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
       interval: 30s
@@ -169,10 +165,4 @@ networks:
       config:
         - subnet: 172.20.0.0/16
 
-volumes:
-  command-logs:
-    driver: local
-  query-logs:
-    driver: local
-  auth-logs:
-    driver: local
+
