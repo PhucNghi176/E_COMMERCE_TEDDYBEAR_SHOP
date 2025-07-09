@@ -3,6 +3,7 @@ using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.ResponseCompression;
 using QUERY.API.DependencyInjection.Extensions;
 using QUERY.API.Middlewares;
 using QUERY.APPLICATION.DependencyInjection.Extensions;
@@ -32,9 +33,32 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext()
     .WriteTo.File("Logs/logs.txt", rollingInterval: RollingInterval.Day)
     .WriteTo.Console());
-// Add Carter module
 
+// Add Carter module
 builder.Services.AddCarter();
+
+// Optimize: Add response compression for better performance
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<GzipCompressionProvider>();
+    options.Providers.Add<BrotliCompressionProvider>();
+});
+
+// Optimize: Add output caching for query responses
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder
+        .Expire(TimeSpan.FromMinutes(10))
+        .SetVaryByQuery("*"));
+    
+    options.AddPolicy("ProductCache", builder => builder
+        .Expire(TimeSpan.FromMinutes(5))
+        .SetVaryByQuery("searchTerm", "sortColumn", "sortOrder", "tag", "pageIndex", "pageSize"));
+        
+    options.AddPolicy("TagCache", builder => builder
+        .Expire(TimeSpan.FromHours(1))); // Tags change less frequently
+});
 
 builder.Services
     .AddSwaggerGenNewtonsoftSupport()
@@ -74,13 +98,18 @@ builder.Services.AddServicesInfrastructure();
 builder.Services.AddRedisInfrastructure(builder.Configuration);
 builder.Services.AddMediatRInfrastructure();
 
-builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+// Optimize: Remove duplicate service registrations
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+// Optimize: Add compression before other middleware
+app.UseResponseCompression();
+
+// Optimize: Add output caching
+app.UseOutputCache();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -95,7 +124,6 @@ app.UseCors("CorsPolicy");
 
 app.UseAuthentication(); // Need to be before app.UseAuthorization();
 app.UseAuthorization();
-
 
 // 7. Map Carter endpoints
 app.MapCarter();

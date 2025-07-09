@@ -3,6 +3,7 @@ using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using QUERY.PERSISTENCE.Repositories;
 
@@ -14,14 +15,17 @@ public static class ServiceCollectionExtensions
         _ = services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
         {
             var configuration = provider.GetRequiredService<IConfiguration>();
+            var environment = provider.GetRequiredService<IHostEnvironment>();
             var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
 
-            #region ============== SQL-SERVER-STRATEGY-1 ==============
+            #region ============== OPTIMIZED-SQL-SERVER-CONFIGURATION ==============
 
             _ = builder
-                .EnableDetailedErrors()
-                .EnableSensitiveDataLogging()
-                .UseLazyLoadingProxies() // => If UseLazyLoadingProxies, all of the navigation fields should be VIRTUAL
+                // Optimize: Only enable detailed errors and sensitive data logging in development
+                .EnableDetailedErrors(environment.IsDevelopment())
+                .EnableSensitiveDataLogging(environment.IsDevelopment())
+                // Optimize: Disable lazy loading to prevent N+1 queries and improve performance
+                // .UseLazyLoadingProxies() // Commented out for better performance
                 .UseSqlServer(
                     configuration.GetConnectionString("ConnectionStrings"),
                     optionsBuilder
@@ -30,11 +34,13 @@ public static class ServiceCollectionExtensions
                                 options.CurrentValue.MaxRetryCount,
                                 options.CurrentValue.MaxRetryDelay,
                                 options.CurrentValue.ErrorNumbersToAdd))
-                            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name));
+                            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name)
+                            // Optimize: Enable command timeout for long-running queries
+                            .CommandTimeout(30));
 
-            #endregion ============== SQL-SERVER-STRATEGY-1 ==============
+            #endregion ============== OPTIMIZED-SQL-SERVER-CONFIGURATION ==============
 
-            #region ============== SQL-SERVER-STRATEGY-2 ==============
+            #region ============== LEGACY-SQL-SERVER-STRATEGY ==============
 
             //builder
             //.EnableDetailedErrors(true)
@@ -46,7 +52,7 @@ public static class ServiceCollectionExtensions
             //            => optionsBuilder
             //            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name));
 
-            #endregion ============== SQL-SERVER-STRATEGY-2 ==============
+            #endregion ============== LEGACY-SQL-SERVER-STRATEGY ==============
         });
     }
 
@@ -60,7 +66,8 @@ public static class ServiceCollectionExtensions
 
     public static void AddRepositoryPersistence(this IServiceCollection services)
     {
-        _ = services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+        // Optimize: Use Scoped for better performance in web applications
+        _ = services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
     }
 
     public static OptionsBuilder<SqlServerRetryOptions> ConfigureSqlServerRetryOptionsPersistence(

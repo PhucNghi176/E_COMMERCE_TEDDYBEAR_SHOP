@@ -1,54 +1,56 @@
 using COMMAND.PERSISTENCE;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace COMMAND.APPLICATION.Behaviors;
-public sealed class TransactionPipelineBehavior<TRequest, TResponse>(ApplicationDbContext context)
-    : IPipelineBehavior<TRequest, TResponse>
+public sealed class TransactionPipelineBehavior<TRequest, TResponse>(
+    ApplicationDbContext context,
+    ILogger<TransactionPipelineBehavior<TRequest, TResponse>> logger
+) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     public async Task<TResponse> Handle(TRequest request,
         RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!IsCommand()) // In case TRequest is QueryRequest just ignore
+        // Optimize: Skip transaction for non-command operations
+        if (!IsCommand())
             return await next();
 
-        #region ============== SQL-SERVER-STRATEGY-1 ==============
-
-        //// Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
-        //// https://learn.microsoft.com/ef/core/miscellaneous/connection-resiliency
+        // Optimize: Use execution strategy with better error handling
         var strategy = context.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            try
             {
+                await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                
+                logger.LogDebug("Started transaction for {RequestType}", typeof(TRequest).Name);
+                
                 var response = await next();
-                _ = await context.SaveChangesAsync(cancellationToken);
+                
+                var changeCount = await context.SaveChangesAsync(cancellationToken);
+                logger.LogDebug("Saved {ChangeCount} changes for {RequestType}", changeCount, typeof(TRequest).Name);
+                
                 await transaction.CommitAsync(cancellationToken);
+                logger.LogDebug("Committed transaction for {RequestType}", typeof(TRequest).Name);
+                
                 return response;
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Transaction failed for {RequestType}: {ErrorMessage}", 
+                    typeof(TRequest).Name, ex.Message);
+                throw;
+            }
         });
-
-        #endregion ============== SQL-SERVER-STRATEGY-1 ==============
-
-        #region ============== SQL-SERVER-STRATEGY-2 ==============
-
-        //IMPORTANT: passing "TransactionScopeAsyncFlowOption.Enabled" to the TransactionScope constructor. This is necessary to be able to use it with async/await.
-        //using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        //{
-        //    var response = await next();
-        //    await _unitOfWork.SaveChangesAsync(cancellationToken);
-        //    transaction.Complete();
-        //    await _unitOfWork.DisposeAsync();
-        //    return response;
-        //}
-
-        #endregion ============== SQL-SERVER-STRATEGY-2 ==============
     }
 
-
+    // Optimize: More efficient command detection
     private static bool IsCommand()
     {
-        return typeof(TRequest).Name.EndsWith("Command");
+        var requestType = typeof(TRequest);
+        return requestType.Name.EndsWith("Command", StringComparison.OrdinalIgnoreCase) ||
+               requestType.GetInterfaces().Any(i => i.Name.Contains("Command"));
     }
 }

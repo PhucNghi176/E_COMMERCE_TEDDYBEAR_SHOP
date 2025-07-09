@@ -7,22 +7,20 @@ public class PerformancePipelineBehavior<TRequest, TResponse>(ILogger<TRequest> 
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly Stopwatch _timer = new();
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        _timer.Start();
-        var response = await next();
-        _timer.Stop();
+        var startTime = Stopwatch.GetTimestamp();
+        var response = await next(cancellationToken);
+        var elapsedTime = Stopwatch.GetElapsedTime(startTime);
 
-        var elapsedMilliseconds = _timer.ElapsedMilliseconds;
+        var elapsedMilliseconds = elapsedTime.TotalMilliseconds;
 
         if (elapsedMilliseconds <= 5000)
             return response;
 
         var requestName = typeof(TRequest).Name;
-        logger.LogWarning("Long Time Running - Request Details: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}",
+        logger.LogWarning("Long Running Request - {RequestName} took {ElapsedMilliseconds}ms. Request: {@Request}",
             requestName, elapsedMilliseconds, request);
 
         return response;
