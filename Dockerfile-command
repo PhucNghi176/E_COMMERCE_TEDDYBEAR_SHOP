@@ -54,7 +54,7 @@ RUN find . -name "*.pdb" -type f -delete && \
     find . -name "*.dev.json" -type f -delete
 
 # Use smaller runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine-minimal AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 
 # Add only required packages and clean cache in same layer
 RUN apk add --no-cache icu-libs curl && \
