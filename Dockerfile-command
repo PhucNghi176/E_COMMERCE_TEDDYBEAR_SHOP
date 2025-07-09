@@ -28,12 +28,13 @@ COPY COMMAND/COMMAND.PERSISTENCE/*.csproj COMMAND/COMMAND.PERSISTENCE/
 COPY COMMAND/COMMAND.PRESENTATION/*.csproj COMMAND/COMMAND.PRESENTATION/
 COPY COMMAND/COMMAND.CONTRACT/*.csproj COMMAND/COMMAND.CONTRACT/
 
-# Restore dependencies with caching and target architecture
-RUN --mount=type=cache,target=/root/.nuget/packages \
+# Restore dependencies with error handling
+RUN dotnet nuget locals all --clear && \
     dotnet restore COMMAND/COMMAND.API/COMMAND.API.csproj \
     --verbosity minimal \
     -r linux-musl-x64 \
-    --disable-parallel
+    --disable-parallel \
+    --force
 
 # Copy source code (in order of change frequency - least changing first)
 COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/ E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
@@ -47,8 +48,7 @@ COPY COMMAND/COMMAND.API/ COMMAND/COMMAND.API/
 
 # Build and publish with optimizations
 WORKDIR /src/COMMAND/COMMAND.API
-RUN --mount=type=cache,target=/root/.nuget/packages \
-    dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
+RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
     -r linux-musl-x64 \
     --self-contained false \
     --no-restore \

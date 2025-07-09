@@ -5,9 +5,6 @@
       dockerfile: Dockerfile-command
       args:
         BUILD_CONFIGURATION: Release
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - command-api:latest
       target: runtime
     image: command-api:latest
     container_name: command-api
@@ -57,9 +54,6 @@
       dockerfile: Dockerfile-query
       args:
         BUILD_CONFIGURATION: Release
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - query-api:latest
       target: runtime
     image: query-api:latest
     container_name: query-api
@@ -111,9 +105,6 @@
       dockerfile: Dockerfile-authorize
       args:
         BUILD_CONFIGURATION: Release
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - authorize-api:latest
       target: runtime
     image: authorize-api:latest
     container_name: authorize-api

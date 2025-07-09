@@ -33,12 +33,13 @@ COPY AUTHORIZATION/AUTHORIZATION.PERSISTENCE/*.csproj AUTHORIZATION/AUTHORIZATIO
 COPY AUTHORIZATION/AUTHORIZATION.PRESENTATION/*.csproj AUTHORIZATION/AUTHORIZATION.PRESENTATION/
 COPY AUTHORIZATION/AUTHORIZATION.CONTRACT/*.csproj AUTHORIZATION/AUTHORIZATION.CONTRACT/
 
-# Restore dependencies with caching and target architecture
-RUN --mount=type=cache,target=/root/.nuget/packages \
+# Restore dependencies with error handling
+RUN dotnet nuget locals all --clear && \
     dotnet restore AUTHORIZATION/AUTHORIZATION.API/AUTHORIZATION.API.csproj \
     --verbosity minimal \
     -r linux-musl-x64 \
-    --disable-parallel
+    --disable-parallel \
+    --force
 
 # Copy source code (in order of change frequency - least changing first)
 COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/ E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
@@ -55,8 +56,7 @@ COPY AUTHORIZATION/AUTHORIZATION.API/ AUTHORIZATION/AUTHORIZATION.API/
 
 # Build and publish with optimizations
 WORKDIR /src/AUTHORIZATION/AUTHORIZATION.API
-RUN --mount=type=cache,target=/root/.nuget/packages \
-    dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
+RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
     -r linux-musl-x64 \
     --self-contained false \
     --no-restore \

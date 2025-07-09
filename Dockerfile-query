@@ -28,12 +28,13 @@ COPY QUERY/QUERY.PERSISTENCE/*.csproj QUERY/QUERY.PERSISTENCE/
 COPY QUERY/QUERY.PRESENTATION/*.csproj QUERY/QUERY.PRESENTATION/
 COPY QUERY/QUERY.CONTRACT/*.csproj QUERY/QUERY.CONTRACT/
 
-# Restore dependencies with caching and target architecture
-RUN --mount=type=cache,target=/root/.nuget/packages \
+# Restore dependencies with error handling
+RUN dotnet nuget locals all --clear && \
     dotnet restore QUERY/QUERY.API/QUERY.API.csproj \
     --verbosity minimal \
     -r linux-musl-x64 \
-    --disable-parallel
+    --disable-parallel \
+    --force
 
 # Copy source code (in order of change frequency - least changing first)
 COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/ E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
@@ -47,8 +48,7 @@ COPY QUERY/QUERY.API/ QUERY/QUERY.API/
 
 # Build and publish with optimizations
 WORKDIR /src/QUERY/QUERY.API
-RUN --mount=type=cache,target=/root/.nuget/packages \
-    dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
+RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
     -r linux-musl-x64 \
     --self-contained false \
     --no-restore \
