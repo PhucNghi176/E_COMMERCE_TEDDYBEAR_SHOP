@@ -7,19 +7,20 @@ public class TracingPipelineBehavior<TRequest, TResponse>(ILogger<TRequest> logg
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly Stopwatch _timer = new();
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        _timer.Start();
+        // Optimize: Use more efficient timing mechanism
+        var startTime = Stopwatch.GetTimestamp();
         var response = await next();
-        _timer.Stop();
+        var elapsedTime = Stopwatch.GetElapsedTime(startTime);
 
-        var elapsedMilliseconds = _timer.ElapsedMilliseconds;
+        var elapsedMilliseconds = elapsedTime.TotalMilliseconds;
         var requestName = typeof(TRequest).Name;
-        logger.LogInformation("Request Details: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", requestName,
-            elapsedMilliseconds, request);
+        
+        // Optimize: Only log in Debug/Development for better production performance
+        logger.LogDebug("Request Details: {RequestName} completed in {ElapsedMilliseconds}ms. Request: {@Request}", 
+            requestName, elapsedMilliseconds, request);
 
         return response;
     }
