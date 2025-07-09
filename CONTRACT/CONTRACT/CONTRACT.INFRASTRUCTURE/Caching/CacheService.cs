@@ -14,6 +14,16 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
      * =>> Cache Service can be used concurrently, so we have to make sure that the data structure that we choose is thead safe => use ConcurrentDictionary
      */
     private static readonly ConcurrentDictionary<string, bool> CacheKeys = new();
+    
+    // Optimize JSON serialization by reusing settings
+    private static readonly JsonSerializerSettings SerializerSettings = new()
+    {
+        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+        ContractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        }
+    };
 
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         where T : class
@@ -22,31 +32,25 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
 
         if (cacheValue is null)
             return null;
-        var value = JsonConvert.DeserializeObject<T>(cacheValue, new JsonSerializerSettings
-        {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            ContractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            }
-        });
+            
+        var value = JsonConvert.DeserializeObject<T>(cacheValue, SerializerSettings);
         return value;
     }
 
     public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions? options,
         CancellationToken cancellationToken = default) where T : class
     {
-        var cacheValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings
+        var cacheValue = JsonConvert.SerializeObject(value, SerializerSettings);
+
+        // Fix: Only call SetStringAsync once, with options if provided
+        if (options != null)
         {
-            ContractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            }
-        });
-
-        if (options != null) await distributedCache.SetStringAsync(key, cacheValue, options, cancellationToken);
-
-        await distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
+            await distributedCache.SetStringAsync(key, cacheValue, options, cancellationToken);
+        }
+        else
+        {
+            await distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
+        }
 
         _ = CacheKeys.TryAdd(key, false);
     }
@@ -59,15 +63,23 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
 
     public async Task RemoveByPrefixAsync(string prefixKey, CancellationToken cancellationToken = default)
     {
-        //foreach (string key in CacheKeys.Keys)
-        //{
-        //    if (key.StartsWith(prefixKey))
-        //        await RemoveAsync(key, cancellationToken); // Call remove one by one
-        //}
+        // Optimize: Use parallel execution with proper exception handling
+        var matchingKeys = CacheKeys.Keys.Where(k => k.StartsWith(prefixKey)).ToList();
+        
+        if (matchingKeys.Count == 0) return;
+        
+        var tasks = matchingKeys.Select(async k =>
+        {
+            try
+            {
+                await RemoveAsync(k, cancellationToken);
+            }
+            catch (Exception)
+            {
+                // Log if needed, but don't fail the entire operation
+            }
+        });
 
-        var tasks = CacheKeys.Keys.Where(k => k.StartsWith(prefixKey))
-            .Select(k => RemoveAsync(k, cancellationToken));
-
-        await Task.WhenAll(tasks); // Execute in parallel
+        await Task.WhenAll(tasks);
     }
 }

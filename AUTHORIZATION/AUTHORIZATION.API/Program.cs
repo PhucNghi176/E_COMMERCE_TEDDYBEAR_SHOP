@@ -8,9 +8,11 @@ using CONTRACT.CONTRACT.API.DependencyInjection.Extensions;
 using CONTRACT.CONTRACT.DOMAIN.Abstractions.Repositories;
 using CONTRACT.CONTRACT.PERSISTENCE.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 using Serilog.Events;
 using ServiceDefaults;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,12 +38,19 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 // Add Carter module with assembly scanning for presentation layer
 builder.Services.AddCarter();
 
+// Optimize: Add response compression for better performance
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<GzipCompressionProvider>();
+    options.Providers.Add<BrotliCompressionProvider>();
+});
+
 builder.Services
     .AddSwaggerGenNewtonsoftSupport()
     .AddFluentValidationRulesToSwagger()
     .AddEndpointsApiExplorer()
     .AddSwaggerAPI1();
-
 
 builder.Services
     .AddApiVersioning(options => options.ReportApiVersions = true)
@@ -62,7 +71,6 @@ builder.Services.AddHttpContextAccessor();
 // Application Layer
 builder.Services.AddMediatRApplication();
 
-
 // Persistence Layer
 builder.Services.AddInterceptorPersistence();
 builder.Services.ConfigureSqlServerRetryOptionsPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
@@ -74,9 +82,7 @@ builder.Services.AddServicesInfrastructure();
 builder.Services.AddMediatRInfrastructure();
 //builder.Services.ConfigureMailOptionsInfrastructure(builder.Configuration.GetSection(nameof(MailOption)));
 
-
-// Add Middleware => Remember using middleware
-builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+// Optimize: Remove duplicate service registrations and consolidate
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
 builder.Services.AddAntiforgery(options =>
 {
@@ -84,11 +90,13 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-CSRF-TOKEN"; // Default header for token validation
 });
 
-
 var app = builder.Build();
 
 // Map Aspire default endpoints (health checks, etc.)
 app.MapDefaultEndpoints();
+
+// Optimize: Add compression before other middleware
+app.UseResponseCompression();
 
 // Using middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();

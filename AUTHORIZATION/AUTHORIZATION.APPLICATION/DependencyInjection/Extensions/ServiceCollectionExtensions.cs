@@ -13,12 +13,17 @@ public static class ServiceCollectionExtensions
             .AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly)
             )
-            //.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationDefaultBehavior<,>))
+            // Optimize: Order pipeline behaviors for better performance
+            // 1. Validation should come first to fail fast
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>))
+            // 2. Caching before expensive operations
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingPipelineBehaviorCachingBehavior<,>))
+            // 3. Performance monitoring
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformancePipelineBehavior<,>))
-           // .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingPipelineBehaviorCachingBehavior<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>))
+            // 4. Tracing for debugging
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(TracingPipelineBehavior<,>))
+            // 5. Transaction should be last to wrap all operations
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>))
             .AddValidatorsFromAssembly(CONTRACT.AssemblyReference.Assembly, includeInternalTypes: true);
     }
 
