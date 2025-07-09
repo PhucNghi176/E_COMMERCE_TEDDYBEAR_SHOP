@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   command-api:
     build:
@@ -8,22 +10,27 @@ services:
     container_name: command-api
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - COMPlus_GCHeapHardLimit=0x10000000
+      - DOTNET_GCHeapCount=2
     ports:
       - "1706:8080"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - app-network
     volumes:
       - ./COMMAND/COMMAND.API/appsettings.json:/app/appsettings.json:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 45s
+      timeout: 15s
+      retries: 2
+      start_period: 75s
+    deploy:
+      resources:
+        limits:
+          memory: 380M
+          cpus: '0.35'
 
   query-api:
     build:
@@ -34,26 +41,31 @@ services:
     container_name: query-api
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - COMPlus_GCHeapHardLimit=0x10000000
+      - DOTNET_GCHeapCount=2
     ports:
       - "1906:8080"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - app-network
     volumes:
       - ./QUERY/QUERY.API/appsettings.json:/app/appsettings.json:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 45s
+      timeout: 15s
+      retries: 2
+      start_period: 75s
     depends_on:
       command-api:
         condition: service_healthy
-  
+    deploy:
+      resources:
+        limits:
+          memory: 380M
+          cpus: '0.35'
+
   authorize-api:
     build:
       context: .
@@ -63,22 +75,27 @@ services:
     container_name: authorize-api
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - COMPlus_GCHeapHardLimit=0x0C000000
+      - DOTNET_GCHeapCount=1
     ports:
       - "1917:8080"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - app-network
     volumes:
       - ./AUTHORIZATION/AUTHORIZATION.API/appsettings.json:/app/appsettings.json:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 45s
+      timeout: 15s
+      retries: 2
+      start_period: 75s
+    deploy:
+      resources:
+        limits:
+          memory: 320M
+          cpus: '0.3'
 
 networks:
   app-network:
