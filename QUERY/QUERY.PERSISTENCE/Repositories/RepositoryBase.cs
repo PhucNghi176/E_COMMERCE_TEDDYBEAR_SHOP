@@ -25,20 +25,31 @@ public class RepositoryBase<TEntity, TKey>(ApplicationDbContext dbContext) : IRe
         return items;
     }
 
+    // Optimized: Keep AsNoTracking for query side, use direct query for better performance
     public async Task<TEntity> FindByIdAsync(TKey id, CancellationToken cancellationToken = default,
         params Expression<Func<TEntity, object>>[] includeProperties)
     {
-        return await FindAll(null, includeProperties)
-            .AsTracking()
-            .SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+        var query = dbContext.Set<TEntity>().AsNoTracking();
+        
+        if (includeProperties != null)
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+            
+        return await query.SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
     }
 
+    // Optimized: Keep AsNoTracking for query side
     public async Task<TEntity> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
     {
-        return await FindAll(null, includeProperties)
-            .AsTracking()
-            .SingleOrDefaultAsync(predicate, cancellationToken);
+        var query = dbContext.Set<TEntity>().AsNoTracking();
+        
+        if (includeProperties != null)
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+            
+        if (predicate is not null)
+            query = query.Where(predicate);
+            
+        return await query.SingleOrDefaultAsync(cancellationToken);
     }
 
     public void Add(TEntity entity)
