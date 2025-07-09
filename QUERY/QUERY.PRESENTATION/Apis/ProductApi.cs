@@ -5,7 +5,9 @@ using CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using QUERY.CONTRACT.Services.Products;
 
 namespace QUERY.PRESENTATION.Apis;
@@ -20,7 +22,8 @@ public class ProductApi : ApiEndpoint, ICarterModule
             .WithName("GetProducts")
             .Produces<PagedResult<Response.ProductResponse>>()
             .WithTags("Products")
-            .WithSummary("Get all products");
+            .WithSummary("Get all products")
+            .CacheOutput("ProductCache");
     }
 
     private static async Task<IResult> GetProductsAsync(

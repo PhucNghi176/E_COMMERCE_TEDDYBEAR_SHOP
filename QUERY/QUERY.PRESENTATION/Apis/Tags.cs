@@ -3,7 +3,9 @@ using CONTRACT.CONTRACT.PRESENTATION.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using QUERY.CONTRACT.Services.Tags;
 
 namespace QUERY.PRESENTATION.Apis;
@@ -18,7 +20,8 @@ public class Tags : ApiEndpoint, ICarterModule
             .WithName("GetTags")
             .Produces<IReadOnlyList<Response.TagResponse>>()
             .WithTags("Tags")
-            .WithSummary("Get all tags");
+            .WithSummary("Get all tags")
+            .CacheOutput("TagCache");
     }
 
     private static async Task<IResult> GetTagsAsync(ISender sender)
