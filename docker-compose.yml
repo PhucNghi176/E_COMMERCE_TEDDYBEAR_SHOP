@@ -1,13 +1,8 @@
-﻿version: '3.8'
-
-# Optimized Docker Compose configuration for E-Commerce Teddy Bear Shop
-# Features: BuildKit caching, resource optimization, improved health checks
-
-services:
+﻿services:
   command-api:
     build:
       context: .
-      dockerfile: Dockerfile-command.optimized
+      dockerfile: Dockerfile-command
       args:
         BUILD_CONFIGURATION: Release
         BUILDKIT_INLINE_CACHE: 1
@@ -61,7 +56,7 @@ services:
   query-api:
     build:
       context: .
-      dockerfile: Dockerfile-query.optimized
+      dockerfile: Dockerfile-query
       args:
         BUILD_CONFIGURATION: Release
         BUILDKIT_INLINE_CACHE: 1
@@ -116,7 +111,7 @@ services:
   authorize-api:
     build:
       context: .
-      dockerfile: Dockerfile-authorize.optimized
+      dockerfile: Dockerfile-authorize
       args:
         BUILD_CONFIGURATION: Release
         BUILDKIT_INLINE_CACHE: 1
