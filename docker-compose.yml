@@ -1,100 +1,183 @@
+﻿version: '3.8'
+
+# Optimized Docker Compose configuration for E-Commerce Teddy Bear Shop
+# Features: BuildKit caching, resource optimization, improved health checks
+
 services:
   command-api:
     build:
       context: .
-      dockerfile: Dockerfile-command
+      dockerfile: Dockerfile-command.optimized
       args:
         BUILD_CONFIGURATION: Release
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - command-api:latest
+      target: runtime
+    image: command-api:latest
     container_name: command-api
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      - COMPlus_GCHeapHardLimit=0x10000000
+      # Optimized GC settings for microservice workload
+      - DOTNET_GCHeapHardLimit=0x10000000  # 256MB
       - DOTNET_GCHeapCount=2
+      - DOTNET_EnableDiagnostics=0
+      - DOTNET_USE_POLLING_FILE_WATCHER=false
+      # Logging optimizations
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
     ports:
       - "1706:8080"
     networks:
       - app-network
     volumes:
       - ./COMMAND/COMMAND.API/appsettings.json:/app/appsettings.json:ro
+      # Optional: Add volume for persistent logs
+      - command-logs:/app/logs
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
-      interval: 45s
-      timeout: 15s
-      retries: 2
-      start_period: 75s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
-          memory: 380M
-          cpus: '0.35'
+          memory: 320M  # Reduced from 380M
+          cpus: '0.3'   # Reduced from 0.35
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    # Security context
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/logs
 
   query-api:
     build:
       context: .
-      dockerfile: Dockerfile-query
+      dockerfile: Dockerfile-query.optimized
       args:
         BUILD_CONFIGURATION: Release
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - query-api:latest
+      target: runtime
+    image: query-api:latest
     container_name: query-api
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      - COMPlus_GCHeapHardLimit=0x10000000
+      # Optimized GC settings for read-heavy workload
+      - DOTNET_GCHeapHardLimit=0x14000000  # 320MB (slightly higher for caching)
       - DOTNET_GCHeapCount=2
+      - DOTNET_EnableDiagnostics=0
+      - DOTNET_USE_POLLING_FILE_WATCHER=false
+      # Logging optimizations
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
     ports:
       - "1906:8080"
     networks:
       - app-network
     volumes:
       - ./QUERY/QUERY.API/appsettings.json:/app/appsettings.json:ro
+      - query-logs:/app/logs
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
-      interval: 45s
-      timeout: 15s
-      retries: 2
-      start_period: 75s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     depends_on:
       command-api:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 380M
-          cpus: '0.35'
+          memory: 350M  # Slightly reduced from 380M
+          cpus: '0.3'   # Reduced from 0.35
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/logs
 
   authorize-api:
     build:
       context: .
-      dockerfile: Dockerfile-authorize
+      dockerfile: Dockerfile-authorize.optimized
       args:
         BUILD_CONFIGURATION: Release
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - authorize-api:latest
+      target: runtime
+    image: authorize-api:latest
     container_name: authorize-api
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      - COMPlus_GCHeapHardLimit=0x0C000000
+      # Optimized GC settings for auth workload (lower memory)
+      - DOTNET_GCHeapHardLimit=0x0A000000  # 160MB (reduced from 192MB)
       - DOTNET_GCHeapCount=1
+      - DOTNET_EnableDiagnostics=0
+      - DOTNET_USE_POLLING_FILE_WATCHER=false
+      # Logging optimizations
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
     ports:
       - "1917:8080"
     networks:
       - app-network
     volumes:
       - ./AUTHORIZATION/AUTHORIZATION.API/appsettings.json:/app/appsettings.json:ro
+      - auth-logs:/app/logs
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
-      interval: 45s
-      timeout: 15s
-      retries: 2
-      start_period: 75s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
-          memory: 320M
-          cpus: '0.3'
+          memory: 280M  # Reduced from 320M
+          cpus: '0.25'  # Reduced from 0.3
+        reservations:
+          memory: 96M
+          cpus: '0.1'
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/logs
 
 networks:
   app-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: teddy-shop-net
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  command-logs:
+    driver: local
+  query-logs:
+    driver: local
+  auth-logs:
+    driver: local

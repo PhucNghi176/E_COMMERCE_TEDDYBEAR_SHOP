@@ -1,47 +1,63 @@
-# syntax=docker/dockerfile:1
+﻿# syntax=docker/dockerfile:1.4
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
 
-# Set build arguments and environment variables
+# Set build arguments and environment variables for optimization
 ARG BUILD_CONFIGURATION=Release
+ARG TARGETARCH
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-    DOTNET_NOLOGO=true
+    DOTNET_NOLOGO=true \
+    DOTNET_USE_POLLING_FILE_WATCHER=false \
+    NUGET_XMLDOC_MODE=skip
 
 WORKDIR /src
 
-# Copy solution and project files for better cache usage
+# Copy solution file first for better layer caching
 COPY *.sln ./
+
+# Copy all project files in optimal order (most stable first)
+# ServiceDefaults and CONTRACT are shared and change less frequently
+COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/*.csproj E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
+COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
+
+# Copy QUERY project files
 COPY QUERY/QUERY.API/*.csproj QUERY/QUERY.API/
 COPY QUERY/QUERY.APPLICATION/*.csproj QUERY/QUERY.APPLICATION/
 COPY QUERY/QUERY.INFRASTRUCTURE/*.csproj QUERY/QUERY.INFRASTRUCTURE/
 COPY QUERY/QUERY.PERSISTENCE/*.csproj QUERY/QUERY.PERSISTENCE/
 COPY QUERY/QUERY.PRESENTATION/*.csproj QUERY/QUERY.PRESENTATION/
 COPY QUERY/QUERY.CONTRACT/*.csproj QUERY/QUERY.CONTRACT/
-COPY CONTRACT/CONTRACT/*.csproj CONTRACT/CONTRACT/
-COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/*.csproj E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
 
-# Restore dependencies
-RUN dotnet restore QUERY/QUERY.API/QUERY.API.csproj -r linux-musl-x64
+# Restore dependencies with caching and target architecture
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet restore QUERY/QUERY.API/QUERY.API.csproj \
+    --verbosity minimal \
+    -r linux-musl-x64 \
+    --disable-parallel
 
-# Copy only necessary source files (exclude tests, obj, bin folders)
-COPY QUERY/QUERY.API/ QUERY/QUERY.API/
-COPY QUERY/QUERY.APPLICATION/ QUERY/QUERY.APPLICATION/
-COPY QUERY/QUERY.INFRASTRUCTURE/ QUERY/QUERY.INFRASTRUCTURE/
-COPY QUERY/QUERY.PERSISTENCE/ QUERY/QUERY.PERSISTENCE/
-COPY QUERY/QUERY.PRESENTATION/ QUERY/QUERY.PRESENTATION/
-COPY QUERY/QUERY.CONTRACT/ QUERY/QUERY.CONTRACT/
-COPY CONTRACT/CONTRACT/ CONTRACT/CONTRACT/
+# Copy source code (in order of change frequency - least changing first)
 COPY E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/ E_COMMERCE_TEDDYBEAR_SHOP.ServiceDefaults/
+COPY CONTRACT/CONTRACT/ CONTRACT/CONTRACT/
+COPY QUERY/QUERY.CONTRACT/ QUERY/QUERY.CONTRACT/
+COPY QUERY/QUERY.PERSISTENCE/ QUERY/QUERY.PERSISTENCE/
+COPY QUERY/QUERY.INFRASTRUCTURE/ QUERY/QUERY.INFRASTRUCTURE/
+COPY QUERY/QUERY.APPLICATION/ QUERY/QUERY.APPLICATION/
+COPY QUERY/QUERY.PRESENTATION/ QUERY/QUERY.PRESENTATION/
+COPY QUERY/QUERY.API/ QUERY/QUERY.API/
 
-# Build and publish with optimizations for size - removing incompatible options
+# Build and publish with optimizations
 WORKDIR /src/QUERY/QUERY.API
-RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet publish -c ${BUILD_CONFIGURATION} -o /app/out \
     -r linux-musl-x64 \
     --self-contained false \
+    --no-restore \
     /p:DebugType=None \
-    /p:DebugSymbols=false
+    /p:DebugSymbols=false \
+    /p:PublishTrimmed=false \
+    /p:PublishSingleFile=false
 
-# Create a smaller intermediate image by removing unnecessary files
+# Cleaner stage
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine AS cleaner
 WORKDIR /app
 COPY --from=build-env /app/out .
@@ -49,29 +65,36 @@ COPY --from=build-env /app/out .
 # Remove unnecessary files to reduce image size
 RUN find . -name "*.pdb" -type f -delete && \
     find . -name "*.xml" -type f -delete && \
-    find . -name "*.dev.json" -type f -delete
+    find . -name "*.dev.json" -type f -delete && \
+    find . -name "*.Development.json" -type f -delete
 
-# Use smaller runtime image
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 
-# Add only required packages and clean cache in same layer
-RUN apk add --no-cache icu-libs curl && \
+# Install required packages and clean cache in same layer
+RUN apk add --no-cache icu-libs curl tzdata && \
     rm -rf /var/cache/apk/*
 
-# Set globalization invariant
+# Set environment variables
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     ASPNETCORE_URLS=http://+:8080 \
-    # Disable creation of .NET telemetry files
-    COMPlus_EnableDiagnostics=0
+    DOTNET_EnableDiagnostics=0 \
+    DOTNET_USE_POLLING_FILE_WATCHER=false \
+    ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
 
 # Create non-root user for security
-RUN addgroup -g 1000 dotnet && adduser -u 1000 -G dotnet -h /app -s /bin/sh -D dotnet
+RUN addgroup -g 1000 dotnet && \
+    adduser -u 1000 -G dotnet -h /app -s /bin/sh -D dotnet
+
 USER dotnet
 WORKDIR /app
 
-# Copy only the published output from the cleaner stage
+# Copy application files
 COPY --from=cleaner --chown=dotnet:dotnet /app .
 
 # Configure container startup
 EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
 ENTRYPOINT ["dotnet", "QUERY.API.dll"]

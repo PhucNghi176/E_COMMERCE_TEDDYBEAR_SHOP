@@ -1,12 +1,74 @@
-bin/
-obj/
+﻿# Build artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# IDE and editor files
 .vs/
 .vscode/
+.idea/
 *.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Version control
 .git/
 .github/
 .gitignore
+.gitattributes
+
+# Documentation and config files not needed in container
 README.md
+*.md
+LICENSE
+.editorconfig
+
+# Docker files (avoid recursive copying)
 Dockerfile*
 docker-compose*
 .dockerignore
+
+# Test projects and test results
+**/*Test*/
+**/*Tests*/
+**/TestResults/
+**/*.trx
+**/*.coverage
+**/*.coveragexml
+
+# Logs and temporary files
+**/logs/
+**/*.log
+**/temp/
+**/tmp/
+
+# NuGet packages (will be restored during build)
+**/packages/
+**/.nuget/
+
+# Application specific
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/*.Development.json
+
+# Aspire specific
+**/.aspire/
+**/aspire-manifest.json
+
+# Node modules (if any frontend assets)
+**/node_modules/
+**/npm-debug.log*
+
+# Runtime generated
+**/wwwroot/lib/
