@@ -10,7 +10,7 @@
     container_name: command-api
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development  # Changed to Development for troubleshooting
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
       # Optimized GC settings for microservice workload
       - DOTNET_GCHeapHardLimit=0x10000000  # 256MB
@@ -40,10 +40,10 @@
         reservations:
           memory: 128M
           cpus: '0.1'
-    # Security context
+    # Security context - Temporarily remove read-only for troubleshooting
     security_opt:
       - no-new-privileges:true
-    read_only: true
+    read_only: false  # Changed to false for troubleshooting
     tmpfs:
       - /tmp
       - /app/logs
@@ -59,7 +59,7 @@
     container_name: query-api
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development  # Changed to Development for troubleshooting
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
       # Optimized GC settings for read-heavy workload
       - DOTNET_GCHeapHardLimit=0x14000000  # 320MB (slightly higher for caching)
@@ -94,7 +94,7 @@
           cpus: '0.1'
     security_opt:
       - no-new-privileges:true
-    read_only: true
+    read_only: false  # Changed to false for troubleshooting
     tmpfs:
       - /tmp
       - /app/logs
@@ -110,7 +110,7 @@
     container_name: authorize-api
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development  # Changed to Development for troubleshooting
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
       # Optimized GC settings for auth workload (lower memory)
       - DOTNET_GCHeapHardLimit=0x0A000000  # 160MB (reduced from 192MB)
@@ -142,7 +142,7 @@
           cpus: '0.1'
     security_opt:
       - no-new-privileges:true
-    read_only: true
+    read_only: false  # Changed to false for troubleshooting
     tmpfs:
       - /tmp
       - /app/logs
@@ -155,5 +155,3 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
-
-
