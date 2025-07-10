@@ -12,13 +12,21 @@ jobs:
     runs-on: [ self-hosted ]
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # Avoids .git/FETCH_HEAD permission issues
 
-      - name: Ensure directories exist and write appsettings
+      - name: Fix permissions and prepare directories
         run: |
+          sudo chown -R $USER:$USER .  # Fixes .git/FETCH_HEAD issue
           mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
+          # Remove any existing directories mistakenly named "appsettings.json"
+          rm -rf COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          # Write new files
           echo "$APPSETTING" > QUERY/QUERY.API/appsettings.json
           echo "$APPSETTING" > COMMAND/COMMAND.API/appsettings.json
           echo "$APPSETTING" > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          # Verify permissions
+          chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
 
       - name: Build with Docker Compose
         run: docker compose build
@@ -28,13 +36,18 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Prepare Configuration
         run: |
+          sudo chown -R $USER:$USER .
           mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
+          rm -rf COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
           echo "$APPSETTING" > QUERY/QUERY.API/appsettings.json
           echo "$APPSETTING" > COMMAND/COMMAND.API/appsettings.json
           echo "$APPSETTING" > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
 
       - name: Deploy to Server (Password Auth)
         uses: appleboy/ssh-action@master
@@ -46,7 +59,8 @@ jobs:
           script: |
             cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
             git pull origin main
-            mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API
+            mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
+            rm -f QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
