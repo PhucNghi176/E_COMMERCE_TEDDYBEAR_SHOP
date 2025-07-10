@@ -28,8 +28,14 @@ jobs:
           # Verify permissions
           chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
 
-      - name: Build with Docker Compose
-        run: docker compose build
+      - name: Build Authorize API Image
+        run: docker build -f Dockerfile-authorize -t authorize-api:latest --target runtime .
+        
+      - name: Build Command API Image
+        run: docker build -f Dockerfile-command -t command-api:latest --target runtime .
+        
+      - name: Build Query API Image
+        run: docker build -f Dockerfile-query -t query-api:latest --target runtime .
 
   deploy:
     runs-on: [ self-hosted ]
@@ -64,7 +70,17 @@ jobs:
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+            
+            # Start containers one by one instead of all at once
             docker compose down
-            docker compose build --no-cache
+            
+            # Build each service individually
+            docker build -f Dockerfile-authorize -t authorize-api:latest --target runtime .
+            docker build -f Dockerfile-command -t command-api:latest --target runtime .
+            docker build -f Dockerfile-query -t query-api:latest --target runtime .
+            
+            # Start services
             docker compose up -d --remove-orphans
+            
+            # Clean up unused images
             docker image prune -af
