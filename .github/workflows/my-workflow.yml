@@ -11,26 +11,45 @@ jobs:
   build:
     runs-on: [ self-hosted ]
     steps:
+      - name: Prepare build environment
+        run: |
+          # Fix potential permission issues before checkout
+          sudo chown -R $USER:$USER .
+          if [ -d ".git" ]; then 
+            sudo chmod -R 755 .git
+          fi
+
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false  # Avoids .git/FETCH_HEAD permission issues
+          persist-credentials: false
+          # Clean checkout to avoid permission issues
+          clean: true
 
       - name: Fix permissions and prepare directories
         run: |
-          sudo chown -R $USER:$USER .  # Fixes .git/FETCH_HEAD issue
+          # Fix permissions
+          sudo chown -R $USER:$USER .
+          
+          # Create directories with proper ownership
           mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
-          # Remove any existing files/directories named "appsettings.json"
-          rm -rf QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          
+          # Ensure any existing appsettings.json is properly removed (whether file or directory)
+          sudo rm -rf QUERY/QUERY.API/appsettings.json
+          sudo rm -rf COMMAND/COMMAND.API/appsettings.json  
+          sudo rm -rf AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          
           # Write new files with proper content verification
           echo "$APPSETTING" > QUERY/QUERY.API/appsettings.json
           echo "$APPSETTING" > COMMAND/COMMAND.API/appsettings.json
           echo "$APPSETTING" > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          
           # Verify files were created and have content
           if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
             echo "ERROR: One or more appsettings.json files are empty or missing"
             ls -la QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
             exit 1
           fi
+          
           # Set proper permissions
           chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
           echo "appsettings.json files created successfully:"
@@ -52,27 +71,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-
-      - name: Prepare Configuration
-        run: |
-          sudo chown -R $USER:$USER .
-          mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
-          # Remove any existing files/directories named "appsettings.json"
-          rm -rf QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-          # Create appsettings.json files with proper content verification
-          echo "$APPSETTING" > QUERY/QUERY.API/appsettings.json
-          echo "$APPSETTING" > COMMAND/COMMAND.API/appsettings.json
-          echo "$APPSETTING" > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-          # Verify files were created and have content
-          if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
-            echo "ERROR: One or more appsettings.json files are empty or missing"
-            ls -la QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            exit 1
-          fi
-          # Set proper permissions
-          chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-          echo "appsettings.json files created successfully:"
-          ls -la QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          clean: true
 
       - name: Deploy to Server (Password Auth)
         uses: appleboy/ssh-action@master
@@ -83,21 +82,30 @@ jobs:
           port: 22
           script: |
             cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
+            
+            # Fix permissions first
+            sudo chown -R $(whoami):$(whoami) .
+            
+            # Pull the latest code
             git pull origin main
+            
+            # Create appsettings directories and ensure proper permissions
             mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
             
-            # Ensure old appsettings are removed (whether they're files or directories)
-            rm -rf QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+            # Remove any existing appsettings.json (whether file or directory) with sudo
+            sudo rm -rf QUERY/QUERY.API/appsettings.json
+            sudo rm -rf COMMAND/COMMAND.API/appsettings.json
+            sudo rm -rf AUTHORIZATION/AUTHORIZATION.API/appsettings.json
             
-            # Echo appsettings with proper escaping and content verification
+            # Create new appsettings.json files with proper ownership
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
             
-            # Verify files were created successfully
+            # Verify files were created successfully and have content
             if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
               echo "ERROR: One or more appsettings.json files are empty or missing on server"
-              ls -la QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+              ls -la QUERY/QUERY.API/ COMMAND/COMMAND.API/ AUTHORIZATION/AUTHORIZATION.API/
               exit 1
             fi
             
@@ -106,20 +114,17 @@ jobs:
             echo "appsettings.json files created successfully on server:"
             ls -la QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
             
-            # Copy appsettings directly to the Docker mount points that the containers will use
-            cp QUERY/QUERY.API/appsettings.json /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP/QUERY/QUERY.API/appsettings.json
-            cp COMMAND/COMMAND.API/appsettings.json /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP/COMMAND/COMMAND.API/appsettings.json
-            cp AUTHORIZATION/AUTHORIZATION.API/appsettings.json /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP/AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            
-            # Start containers one by one instead of all at once
+            # Stop containers
             docker compose down
             
-            # Set environment variable for Docker build
-            export APPSETTING='${{ secrets.APPSETTING }}'
-            
-            # Build each service individually with warnings ignored
+            # Build each service individually with warnings ignored (one at a time)
+            echo "Building authorize-api..."
             docker build -f Dockerfile-authorize -t authorize-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
+            
+            echo "Building command-api..."
             docker build -f Dockerfile-command -t command-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
+            
+            echo "Building query-api..."
             docker build -f Dockerfile-query -t query-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
             
             # Verify appsettings are still present after build
@@ -128,8 +133,18 @@ jobs:
               exit 1
             fi
             
+            # Set proper permissions once more to be absolutely sure
+            chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+            
             # Start services with the Development environment for troubleshooting
             ASPNETCORE_ENVIRONMENT=Development docker compose up -d --remove-orphans
+            
+            # Wait for containers to stabilize
+            echo "Waiting for containers to start..."
+            sleep 10
+            
+            # Check container status
+            docker ps -a
             
             # Clean up unused images
             docker image prune -af
