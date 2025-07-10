@@ -49,6 +49,7 @@ jobs:
             mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
+            echo '${{ secrets.APPSETTING }}' > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
             docker compose down
             docker compose build --no-cache
             docker compose up -d --remove-orphans
