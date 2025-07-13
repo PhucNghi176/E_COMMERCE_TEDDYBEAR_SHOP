@@ -12,6 +12,7 @@ using QUERY.PERSISTENCE.DependencyInjection.Extensions;
 using Serilog;
 using Serilog.Events;
 using ServiceDefaults;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,8 +99,9 @@ builder.Services.AddServicesInfrastructure();
 builder.Services.AddRedisInfrastructure(builder.Configuration);
 builder.Services.AddMediatRInfrastructure();
 
-// Optimize: Remove duplicate service registrations
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -124,6 +126,7 @@ app.UseCors("CorsPolicy");
 
 app.UseAuthentication(); // Need to be before app.UseAuthorization();
 app.UseAuthorization();
+
 
 // 7. Map Carter endpoints
 app.MapCarter();

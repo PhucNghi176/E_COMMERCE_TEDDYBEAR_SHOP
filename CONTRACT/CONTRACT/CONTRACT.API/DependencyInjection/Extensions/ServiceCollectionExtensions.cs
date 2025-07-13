@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
                 {
                     // Optimize: Use specific origins in production for security
                     var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>() 
-                                       ?? new[] { "https://localhost:7001", "https://yourdomain.com" };
+                                       ?? ["http://localhost:3000", "https://khongthichgaubong.online"];
                     
                     builder.WithOrigins(allowedOrigins)
                            .AllowAnyMethod()

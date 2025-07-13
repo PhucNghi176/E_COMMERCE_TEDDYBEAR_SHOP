@@ -8,9 +8,8 @@ public static class ServiceCollectionExtensions
 {
     public static void AddMediatRApplication(this IServiceCollection services)
     {
-        services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly)
-            )
+        services.AddMediatR(cfg => 
+                cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
             // Optimize: Order pipeline behaviors for maximum performance in Query service
             // 1. Validation should come first to fail fast
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>))

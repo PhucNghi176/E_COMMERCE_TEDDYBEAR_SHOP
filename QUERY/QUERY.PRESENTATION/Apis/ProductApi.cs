@@ -28,10 +28,10 @@ public class ProductApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetProductsAsync(
         ISender sender,
-        string searchTerm = null,
-        string sortColumn = null,
-        string sortOrder = null,
-        string tag = null,
+        string? searchTerm = null,
+        string? sortColumn = null,
+        string? sortOrder = null,
+        string? tag = null,
         int pageIndex = 1,
         int pageSize = 10
     )
