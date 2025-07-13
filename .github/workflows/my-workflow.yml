@@ -1,8 +1,6 @@
-name: Build and Deploy (PR-based)
+name: Build and Deploy (PR-only)
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
@@ -10,92 +8,56 @@ env:
   APPSETTING: ${{ secrets.APPSETTING }}
 
 jobs:
-  check_labels:
-    runs-on: ubuntu-latest
-    outputs:
-      build_authorize: ${{ steps.label-check.outputs.build_authorize }}
-      build_command: ${{ steps.label-check.outputs.build_command }}
-      build_query: ${{ steps.label-check.outputs.build_query }}
-    steps:
-      - name: Check PR labels
-        id: label-check
-        run: |
-          BUILD_AUTHORIZE="false"
-          BUILD_COMMAND="false"
-          BUILD_QUERY="false"
-
-          # Default: build all if push to main
-          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            echo "::set-output name=build_authorize::true"
-            echo "::set-output name=build_command::true"
-            echo "::set-output name=build_query::true"
-            exit 0
-          fi
-
-          # Check for specific labels
-          LABELS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" | jq -r '.[].name')
-
-          echo "Found labels: $LABELS"
-
-          # Set flags based on labels
-          if [[ "$LABELS" == *"build:authorize"* ]]; then
-            BUILD_AUTHORIZE="true"
-          fi
-          if [[ "$LABELS" == *"build:command"* ]]; then
-            BUILD_COMMAND="true"
-          fi
-          if [[ "$LABELS" == *"build:query"* ]]; then
-            BUILD_QUERY="true"
-          fi
-
-          # Default: if no specific labels, build all
-          if [[ "$BUILD_AUTHORIZE" = "false" && "$BUILD_COMMAND" = "false" && "$BUILD_QUERY" = "false" ]]; then
-            BUILD_AUTHORIZE="true"
-            BUILD_COMMAND="true"
-            BUILD_QUERY="true"
-          fi
-
-          echo "::set-output name=build_authorize::$BUILD_AUTHORIZE"
-          echo "::set-output name=build_command::$BUILD_COMMAND"
-          echo "::set-output name=build_query::$BUILD_QUERY"
-
   build:
-    needs: check_labels
     runs-on: [ self-hosted ]
     steps:
       - name: Prepare build environment
         run: |
           sudo chown -R $USER:$USER .
-          [ -d ".git" ] && sudo chmod -R 755 .git
+          if [ -d ".git" ]; then 
+            sudo chmod -R 755 .git
+          fi
 
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
           clean: true
 
-      - name: Setup appsettings.json
+      - name: Fix permissions and prepare directories
         run: |
+          sudo chown -R $USER:$USER .
           mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
-          echo "$APPSETTING" | tee QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json >/dev/null
-          chmod 644 */API/appsettings.json
+          sudo rm -rf QUERY/QUERY.API/appsettings.json
+          sudo rm -rf COMMAND/COMMAND.API/appsettings.json  
+          sudo rm -rf AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          
+          echo "$APPSETTING" > QUERY/QUERY.API/appsettings.json
+          echo "$APPSETTING" > COMMAND/COMMAND.API/appsettings.json
+          echo "$APPSETTING" > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
+          
+          if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
+            echo "ERROR: One or more appsettings.json files are empty or missing"
+            exit 1
+          fi
+          
+          chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
 
-      - name: Build Authorize API
-        if: needs.check_labels.outputs.build_authorize == 'true'
+      - name: Build Authorize API Image
+        if: contains(github.event.pull_request.labels.*.name, 'build:authorize')
         run: docker build -f Dockerfile-authorize -t authorize-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
-
-      - name: Build Command API
-        if: needs.check_labels.outputs.build_command == 'true'
+        
+      - name: Build Command API Image
+        if: contains(github.event.pull_request.labels.*.name, 'build:command')
         run: docker build -f Dockerfile-command -t command-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
-
-      - name: Build Query API
-        if: needs.check_labels.outputs.build_query == 'true'
+        
+      - name: Build Query API Image
+        if: contains(github.event.pull_request.labels.*.name, 'build:query')
         run: docker build -f Dockerfile-query -t query-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
 
   deploy:
-    needs: [ check_labels, build ]
     runs-on: [ self-hosted ]
-    if: github.ref == 'refs/heads/main' # Only deploy on main branch
+    needs: build
+    if: github.event.pull_request.base.ref == 'main'
     steps:
       - uses: actions/checkout@v4
         with:
