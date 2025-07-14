@@ -8,17 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using QUERY.CONTRACT.Services.Products;
 
 namespace QUERY.APPLICATION.UseCases.Queries.Products;
-internal sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repositoryBase)
+public sealed class GetProductsQueryHandler(IRepositoryBase<Product, int> repositoryBase)
     : IQueryHandler<Query.GetProducts, PagedResult<Response.ProductResponse>>
 {
     public async Task<Result<PagedResult<Response.ProductResponse>>> Handle(Query.GetProducts request,
         CancellationToken cancellationToken)
     {
-        // Optimized: Include all related data upfront to prevent N+1 queries
-        var query = repositoryBase.FindAll(null,
-            p => p.ProductTags,
-            p => p.ProductTags.Select(pt => pt.Tag)
-        );
+        // Fixed: Use proper Include/ThenInclude pattern
+        var query = repositoryBase.FindAll(null, p => p.ProductTags);
+        query = query.Include(p => p.ProductTags)
+                    .ThenInclude(pt => pt.Tag);
 
         // Optimized: Use EF.Functions.Like for better database performance on text search
         if (!string.IsNullOrWhiteSpace(request.searchTerm))
