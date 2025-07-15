@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 using Serilog.Events;
 using ServiceDefaults;
-using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
