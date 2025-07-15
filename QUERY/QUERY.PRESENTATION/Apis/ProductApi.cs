@@ -14,6 +14,7 @@ namespace QUERY.PRESENTATION.Apis;
 public class ProductApi : ApiEndpoint, ICarterModule
 {
     private const string BaseUrl = "api/v{version:apiVersion}/products";
+    private const string ProductCacheTag = "products";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -23,7 +24,9 @@ public class ProductApi : ApiEndpoint, ICarterModule
             .Produces<PagedResult<Response.ProductResponse>>()
             .WithTags("Products")
             .WithSummary("Get all products")
-            .CacheOutput("ProductCache");
+            .CacheOutput(policy => policy
+                .Tag(ProductCacheTag)
+                .Expire(TimeSpan.FromMinutes(5)));
     }
 
     private static async Task<IResult> GetProductsAsync(
