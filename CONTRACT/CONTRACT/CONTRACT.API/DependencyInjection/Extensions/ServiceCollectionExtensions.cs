@@ -20,19 +20,19 @@ public static class ServiceCollectionExtensions
                 {
                     // Allow any origin in development for easier testing
                     builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                 }
                 else
                 {
                     // Optimize: Use specific origins in production for security
-                    var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>() 
-                                       ?? ["http://localhost:3000", "https://khongthichgaubong.online"];
-                    
-                    builder.WithOrigins(allowedOrigins)
-                           .AllowAnyMethod()
-                           .AllowAnyHeader()
-                           .AllowCredentials(); // Allow credentials for authenticated requests
+                    // string[] allowedOrigins = ["http://localhost:3000", "https://khongthichgaubong.online"];
+
+                    builder.AllowAnyOrigin()
+                        //.WithOrigins(allowedOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials(); // Allow credentials for authenticated requests
                 }
             });
         });
