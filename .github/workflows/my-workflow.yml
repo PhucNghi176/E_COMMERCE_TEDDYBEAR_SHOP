@@ -1,8 +1,8 @@
-name: Build and Deploy (PR-only)
+name: Build and Deploy (on merge to main)
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [ main ]
 
 env:
   APPSETTING: ${{ secrets.APPSETTING }}
@@ -36,35 +36,30 @@ jobs:
           echo "$APPSETTING" > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
           
           if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
-            echo "ERROR: One or more appsettings.json files are empty or missing"
             exit 1
           fi
           
           chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
 
       - name: Build Authorize API Image
-        if: contains(github.event.pull_request.labels.*.name, 'build:authorize')
         run: docker build -f Dockerfile-authorize -t authorize-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
         
       - name: Build Command API Image
-        if: contains(github.event.pull_request.labels.*.name, 'build:command')
         run: docker build -f Dockerfile-command -t command-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
         
       - name: Build Query API Image
-        if: contains(github.event.pull_request.labels.*.name, 'build:query')
         run: docker build -f Dockerfile-query -t query-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
 
   deploy:
     runs-on: [ self-hosted ]
     needs: build
-    if: github.event.pull_request.base.ref == 'main'
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
           clean: true
 
-      - name: Deploy to Server (Password Auth)
+      - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -73,69 +68,24 @@ jobs:
           port: 22
           script: |
             cd /home/teddybear/E_COMMERCE_TEDDYBEAR_SHOP
-            
-            # Fix permissions first
             sudo chown -R $(whoami):$(whoami) .
-            
-            # Pull the latest code
             git pull origin main
-            
-            # Create appsettings directories and ensure proper permissions
             mkdir -p QUERY/QUERY.API COMMAND/COMMAND.API AUTHORIZATION/AUTHORIZATION.API
-            
-            # Remove any existing appsettings.json (whether file or directory) with sudo
             sudo rm -rf QUERY/QUERY.API/appsettings.json
             sudo rm -rf COMMAND/COMMAND.API/appsettings.json
             sudo rm -rf AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            
-            # Create new appsettings.json files with proper ownership
             echo '${{ secrets.APPSETTING }}' > QUERY/QUERY.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > COMMAND/COMMAND.API/appsettings.json
             echo '${{ secrets.APPSETTING }}' > AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            
-            # Verify files were created successfully and have content
             if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
-              echo "ERROR: One or more appsettings.json files are empty or missing on server"
-              ls -la QUERY/QUERY.API/ COMMAND/COMMAND.API/ AUTHORIZATION/AUTHORIZATION.API/
               exit 1
             fi
-            
-            # Set proper permissions
             chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            echo "appsettings.json files created successfully on server:"
-            ls -la QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            
-            # Stop containers
             docker compose down
-            
-            # Build each service individually with warnings ignored (one at a time)
-            echo "Building authorize-api..."
             docker build -f Dockerfile-authorize -t authorize-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
-            
-            echo "Building command-api..."
             docker build -f Dockerfile-command -t command-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
-            
-            echo "Building query-api..."
             docker build -f Dockerfile-query -t query-api:latest --target runtime --build-arg DOTNET_NoWarn="NETSDK1138,CA1416,CS1591,CS0618,CS8632,NU1701,CS8600,CS8602,CS8603,CS8604,CS8618,CS8619,CS8625,CS8765" .
-            
-            # Verify appsettings are still present after build
-            if [ ! -s QUERY/QUERY.API/appsettings.json ] || [ ! -s COMMAND/COMMAND.API/appsettings.json ] || [ ! -s AUTHORIZATION/AUTHORIZATION.API/appsettings.json ]; then
-              echo "ERROR: One or more appsettings.json files are missing after build"
-              exit 1
-            fi
-            
-            # Set proper permissions once more to be absolutely sure
             chmod 644 QUERY/QUERY.API/appsettings.json COMMAND/COMMAND.API/appsettings.json AUTHORIZATION/AUTHORIZATION.API/appsettings.json
-            
-            # Start services with the Development environment for troubleshooting
             ASPNETCORE_ENVIRONMENT=Development docker compose up -d --remove-orphans
-            
-            # Wait for containers to stabilize
-            echo "Waiting for containers to start..."
             sleep 10
-            
-            # Check container status
-            docker ps -a
-            
-            # Clean up unused images
             docker image prune -af
