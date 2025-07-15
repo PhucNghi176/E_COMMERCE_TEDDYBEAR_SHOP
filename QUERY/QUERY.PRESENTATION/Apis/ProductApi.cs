@@ -23,7 +23,15 @@ public class ProductApi : ApiEndpoint, ICarterModule
             .Produces<PagedResult<Response.ProductResponse>>()
             .WithTags("Products")
             .WithSummary("Get all products")
-            .CacheOutput("ProductCache");
+            .CacheOutput(policy => policy
+                .Tag(ProductCacheTag)
+                .Expire(TimeSpan.FromMinutes(5)));
+                
+        gr1.MapPost("refresh-cache", RefreshProductCache)
+            .WithName("RefreshProductCache")
+            .Produces(StatusCodes.Status200OK)
+            .WithTags("Products")
+            .WithSummary("Manually invalidate products cache");
     }
 
     private static async Task<IResult> GetProductsAsync(
