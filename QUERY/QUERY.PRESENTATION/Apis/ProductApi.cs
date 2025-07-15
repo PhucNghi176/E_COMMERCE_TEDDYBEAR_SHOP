@@ -14,6 +14,7 @@ namespace QUERY.PRESENTATION.Apis;
 public class ProductApi : ApiEndpoint, ICarterModule
 {
     private const string BaseUrl = "api/v{version:apiVersion}/products";
+    private const string ProductCacheTag = "products";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -26,12 +27,6 @@ public class ProductApi : ApiEndpoint, ICarterModule
             .CacheOutput(policy => policy
                 .Tag(ProductCacheTag)
                 .Expire(TimeSpan.FromMinutes(5)));
-                
-        gr1.MapPost("refresh-cache", RefreshProductCache)
-            .WithName("RefreshProductCache")
-            .Produces(StatusCodes.Status200OK)
-            .WithTags("Products")
-            .WithSummary("Manually invalidate products cache");
     }
 
     private static async Task<IResult> GetProductsAsync(
