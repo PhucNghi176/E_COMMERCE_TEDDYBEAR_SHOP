@@ -1,10 +1,10 @@
 namespace CONTRACT.CONTRACT.CONTRACT.Abstractions.Shared;
 public class Result
 {
-    protected internal Result(bool isSuccess, Error error)
+    protected Result(bool isSuccess, Error error)
     {
-        if (isSuccess && error != Error.None) throw new InvalidOperationException();
-        if (!isSuccess && error == Error.None) throw new InvalidOperationException();
+        if (isSuccess && error != Error.None || !isSuccess && error == Error.None)
+            throw new InvalidOperationException();
 
         IsSuccess = isSuccess;
         Error = error;
