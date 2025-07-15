@@ -27,6 +27,12 @@ public class ProductApi : ApiEndpoint, ICarterModule
             .CacheOutput(policy => policy
                 .Tag(ProductCacheTag)
                 .Expire(TimeSpan.FromMinutes(5)));
+        gr1.MapGet("refresh-cache", RefreshProductCache)
+            .WithName("RefreshProductCache")
+            .Produces(StatusCodes.Status200OK)
+            .WithTags("Products")
+            .WithSummary("Manually invalidate products cache")
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetProductsAsync(
@@ -42,5 +48,12 @@ public class ProductApi : ApiEndpoint, ICarterModule
         var result = await sender.Send(new Query.GetProducts(searchTerm, sortColumn,
             SortOrderExtension.ConvertStringToSortOrder(sortOrder), tag, pageIndex, pageSize));
         return result.IsFailure ? HandlerFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> RefreshProductCache(IOutputCacheStore cacheStore,
+        CancellationToken cancellationToken)
+    {
+        await cacheStore.EvictByTagAsync(ProductCacheTag, cancellationToken);
+        return Results.Ok(new { message = "Products cache refreshed successfully" });
     }
 }
